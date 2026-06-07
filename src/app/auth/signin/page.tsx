@@ -4,11 +4,12 @@ export const metadata = {
   title: 'Sign In — Tuition One',
 }
 
-export default function SignInPage({
+export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: { callbackUrl?: string; error?: string }
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>
 }) {
+  const params = await searchParams
   return (
     <section style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--container-pad)' }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
@@ -24,14 +25,14 @@ export default function SignInPage({
           </p>
         </div>
 
-        {searchParams.error === 'AccessDenied' && (
+        {params.error === 'AccessDenied' && (
           <div style={{ background: 'rgba(181,72,60,0.08)', border: '1px solid rgba(181,72,60,0.25)', borderRadius: 12, padding: '14px 18px', marginBottom: 20, fontFamily: 'var(--font-body)', fontSize: 14, color: '#B5483C' }}>
             No account found. You need to purchase a course before signing in.{' '}
             <a href="/courses" style={{ color: '#B5483C', fontWeight: 600, textDecoration: 'underline' }}>Browse courses →</a>
           </div>
         )}
 
-        <AuthSignInForm callbackUrl={searchParams.callbackUrl} />
+        <AuthSignInForm callbackUrl={params.callbackUrl} />
       </div>
     </section>
   )

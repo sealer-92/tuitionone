@@ -8,8 +8,9 @@ const messages: Record<string, string> = {
   Default: 'Something went wrong with sign-in. Please try again.',
 }
 
-export default function AuthErrorPage({ searchParams }: { searchParams: { error?: string } }) {
-  const message = messages[searchParams.error ?? 'Default'] ?? messages.Default
+export default async function AuthErrorPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams
+  const message = messages[error ?? 'Default'] ?? messages.Default
 
   return (
     <section style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--container-pad)' }}>
