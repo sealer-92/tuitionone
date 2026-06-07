@@ -8,9 +8,13 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   // Rate limit by IP
   const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = await checkoutRateLimit.limit(ip)
-  if (!success) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  try {
+    const { success } = await checkoutRateLimit.limit(ip)
+    if (!success) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
+  } catch {
+    // Redis unavailable — allow the request through rather than blocking checkout
   }
 
   const body = await req.json()
@@ -49,9 +53,6 @@ export async function POST(req: NextRequest) {
     cancel_url:  `${process.env.NEXTAUTH_URL}/courses`,
     billing_address_collection: 'auto',
     customer_creation: 'always',
-    consent_collection: {
-      terms_of_service: 'required',
-    },
   })
 
   // Create a PENDING purchase record so we can idempotently handle the webhook

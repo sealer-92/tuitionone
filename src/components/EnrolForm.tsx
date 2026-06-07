@@ -28,7 +28,30 @@ export function EnrolForm() {
     courseId:    initialCourseId,
     terms:       false,
   })
-  const [confirmed, setConfirmed] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
+
+  async function handleCheckout() {
+    setLoading(true)
+    setCheckoutError('')
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId: data.courseId, tier: 'NOTES_ONLY' }),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setCheckoutError(json.error ?? 'Something went wrong. Please try again.')
+        return
+      }
+      window.location.href = json.url
+    } catch {
+      setCheckoutError('Could not reach the payment provider. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const upd = <K extends keyof FormData>(k: K, v: FormData[K]) => setData((d) => ({ ...d, [k]: v }))
 
@@ -183,9 +206,16 @@ export function EnrolForm() {
             <input type="checkbox" checked={data.terms} onChange={(e) => upd('terms', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--orange)', marginTop: 2, cursor: 'pointer' }} />
             <span>I&apos;ve read the terms — full payment is due by the course start date, and late payments forfeit the deposit.</span>
           </label>
+          {checkoutError && (
+            <div style={{ background: 'rgba(181,72,60,0.08)', border: '1px solid rgba(181,72,60,0.25)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: '#B5483C' }}>
+              {checkoutError}
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
-            <Button variant="ghost" onClick={() => setStep(2)}>← Back</Button>
-            <Button variant="primary" size="lg" onClick={() => setConfirmed(true)} icon={<Lock size={16} />} disabled={!data.terms}>Pay €50 deposit</Button>
+            <Button variant="ghost" onClick={() => setStep(2)} disabled={loading}>← Back</Button>
+            <Button variant="primary" size="lg" onClick={handleCheckout} icon={<Lock size={16} />} disabled={!data.terms || loading}>
+              {loading ? 'Redirecting…' : 'Pay €50 deposit'}
+            </Button>
           </div>
         </div>
       )}
