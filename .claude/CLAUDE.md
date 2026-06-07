@@ -83,7 +83,13 @@ npx vitest run src/components/chat/__tests__/ChatInterface.test.tsx
 
 ## Architecture
 
-Simple Web Application where users can pay for one or many courses. They can also login and view videos and notes for the courses they have paid for. 
+1. Simple Web Application where users can pay for one or many courses. They can also login and view videos and notes for the courses they have paid for. 
+2. Vercel Postgres Database 
+3. Prisma
+4. Resend for emails
+5. Stripe for Payments
+6. CloudFlare R2 (file storage)
+7. Upstash Redis (Rate Limiting)
 
 ### Data Flow
 1. User logs in using secure MFA authentication. 
@@ -95,7 +101,7 @@ Simple Web Application where users can pay for one or many courses. They can als
 
 ### Database
 
-SQLite via Prisma. The schema is defined in `prisma/schema.prisma` — reference it any time you need to understand the structure of stored data. Two models: `User` (email/password) and `Project` (name, userId, `messages` as JSON string, `data` as serialized VirtualFileSystem JSON). Run `npx prisma studio` to inspect data.
+Postgres via Vercel. The schema is defined in `prisma/schema.prisma` — reference it any time you need to understand the structure of stored data. Two models: `User` (email/password) and `Project` (name, userId, `messages` as JSON string, `data` as serialized VirtualFileSystem JSON). Run `npx prisma studio` to inspect data.
 
 ### Directory Structure
 
@@ -112,3 +118,6 @@ SQLite via Prisma. The schema is defined in `prisma/schema.prisma` — reference
 
 ## Key Conventions
 <!-- List important coding standards and patterns Claude should follow -->
+
+## Git 
+NEVER commit .env.local to git.

@@ -14,7 +14,26 @@
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth:*)",
       "Bash(git pull:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.anthropic.com)"
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(stripe login *)",
+      "Bash(scoop install *)",
+      "Bash(/c/CLI/stripe login *)",
+      "Bash(/c/CLI/stripe listen *)",
+      "PowerShell(Stop-Process *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 5 | Select-Object StatusCode, StatusDescription)",
+      "PowerShell(Start-Sleep -Seconds 3; Invoke-WebRequest -Uri \"http://localhost:3000/auth/signin\" -UseBasicParsing -TimeoutSec 5 | Select-Object StatusCode)",
+      "PowerShell(Get-Command *)",
+      "Bash(npx prisma *)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 5 | Select-Object StatusCode)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(npm run *)",
+      "PowerShell(Start-Sleep -Seconds 3; Invoke-WebRequest -Uri \"http://localhost:3000/enrol?course=hm-5\" -UseBasicParsing -TimeoutSec 10 | Select-Object StatusCode)",
+      "PowerShell(stripe events *)",
+      "PowerShell(stripe checkout *)",
+      "Bash(node *)"
     ]
   }
 }
