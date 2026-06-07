@@ -6,15 +6,16 @@ import { checkoutRateLimit } from '@/lib/ratelimit'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
-  // Rate limit by IP
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  try {
-    const { success } = await checkoutRateLimit.limit(ip)
-    if (!success) {
-      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  if (process.env.NODE_ENV !== 'development') {
+    const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+    try {
+      const { success } = await checkoutRateLimit.limit(ip)
+      if (!success) {
+        return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+      }
+    } catch {
+      // Redis unavailable — allow the request through rather than blocking checkout
     }
-  } catch {
-    // Redis unavailable — allow the request through rather than blocking checkout
   }
 
   const body = await req.json()

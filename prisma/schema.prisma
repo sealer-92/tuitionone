@@ -44,13 +44,14 @@ enum ConsentType {
 // ─── Users ────────────────────────────────────────────────────────────────────
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String?
-  phone     String?
-  role      Role      @default(STUDENT)
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  phone         String?
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  deletedAt     DateTime?
 
   purchases   Purchase[]
   consentLogs ConsentLog[]
