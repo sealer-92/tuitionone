@@ -63,10 +63,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
-  cookies: {
-    sessionToken: {
-      name: 'tuition-session',
-      options: { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' },
-    },
-  },
 })

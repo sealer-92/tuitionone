@@ -1,11 +1,17 @@
 import type { NextAuthConfig } from 'next-auth'
 
-// Edge-compatible config — no Prisma imports, used by middleware
+// Edge-compatible config — no Prisma imports, used by proxy and auth.ts
 export const authConfig = {
   pages: {
     signIn:        '/auth/signin',
     verifyRequest: '/auth/verify',
     error:         '/auth/error',
+  },
+  cookies: {
+    sessionToken: {
+      name: 'tuition-session',
+      options: { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/' },
+    },
   },
   providers: [], // populated in auth.ts
   callbacks: {
