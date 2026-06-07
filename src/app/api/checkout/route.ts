@@ -55,19 +55,5 @@ export async function POST(req: NextRequest) {
     customer_creation: 'always',
   })
 
-  // Create a PENDING purchase record so we can idempotently handle the webhook
-  // We don't know the userId yet (they may be a new user); set after webhook fires.
-  await db.purchase.create({
-    data: {
-      userId:         'PENDING', // placeholder, updated by webhook
-      courseId,
-      tier:           tier as 'NOTES_ONLY' | 'FULL',
-      stripeSessionId: session.id,
-      amountCents,
-      currency:       'eur',
-      status:         'PENDING',
-    },
-  }).catch(() => { /* ignore if already exists */ })
-
   return NextResponse.json({ url: session.url })
 }

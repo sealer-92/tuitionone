@@ -86,24 +86,6 @@ export function EnrolForm() {
     )
   }
 
-  if (confirmed) {
-    return (
-      <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 20, padding: 48, textAlign: 'center', boxShadow: 'var(--shadow-md)' }}>
-        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(92,138,78,0.18)', color: 'var(--leaf-deep)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-          <Check size={32} strokeWidth={2} />
-        </div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 800, margin: 0, color: 'var(--ink)' }}>Place reserved.</h2>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 17, lineHeight: 1.6, color: 'var(--fg-2)', marginTop: 14, maxWidth: 460, margin: '14px auto 0' }}>
-          We&apos;ve sent a confirmation to <b style={{ color: 'var(--ink)' }}>{data.parentEmail || 'your email'}</b>. The payment link follows in a separate message — you&apos;ve got 48 hours to complete it.
-        </p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 28 }}>
-          <Button variant="secondary" href="/">Back to home</Button>
-          <Button variant="primary" href="/courses">See other courses</Button>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div style={{ background: 'var(--paper)', borderRadius: 20, padding: '32px 36px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
       {/* Progress indicator */}
