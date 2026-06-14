@@ -6,7 +6,6 @@ import { BookOpen, Video } from 'lucide-react'
 interface Props {
   purchase: {
     id: string
-    tier: string
     course: {
       id: string
       title: string
@@ -23,7 +22,7 @@ interface Props {
 }
 
 export function DashboardCourseCard({ purchase }: Props) {
-  const { course, tier } = purchase
+  const { course } = purchase
   const totalVideos = course.modules.reduce((n, m) => n + m.contentItems.filter((c) => c.type === 'VIDEO').length, 0)
   const totalNotes  = course.modules.reduce((n, m) => n + m.contentItems.filter((c) => c.type === 'NOTES').length, 0)
 
@@ -45,13 +44,11 @@ export function DashboardCourseCard({ purchase }: Props) {
           <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>
             <BookOpen size={13} />{totalNotes} notes
           </span>
-          {tier === 'FULL' && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>
-              <Video size={13} />{totalVideos} videos
-            </span>
-          )}
-          <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999, background: tier === 'FULL' ? 'rgba(92,138,78,0.16)' : 'rgba(229,143,63,0.14)', color: tier === 'FULL' ? 'var(--leaf-deep)' : 'var(--orange-deep)' }}>
-            {tier === 'FULL' ? 'Full access' : 'Notes only'}
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>
+            <Video size={13} />{totalVideos} videos
+          </span>
+          <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999, background: 'rgba(92,138,78,0.16)', color: 'var(--leaf-deep)' }}>
+            Full access
           </span>
         </div>
       </div>

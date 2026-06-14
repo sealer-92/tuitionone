@@ -52,20 +52,9 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
       {videos.length > 0 && (
         <div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px' }}>Videos</h2>
-          {purchase.tier !== 'FULL' ? (
-            <div style={{ background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 14, padding: '28px 24px', textAlign: 'center' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'var(--fg-2)', margin: '0 0 16px' }}>
-                Videos are included in the full-access tier.
-              </p>
-              <a href="/courses" style={{ display: 'inline-block', background: 'var(--orange)', color: 'white', fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 14, padding: '10px 22px', borderRadius: 10, textDecoration: 'none' }}>
-                Upgrade your access
-              </a>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {videos.map((item) => <VideoPlayer key={item.id} itemId={item.id} title={item.title} durationSeconds={item.durationSeconds} />)}
-            </div>
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {videos.map((item) => <VideoPlayer key={item.id} itemId={item.id} title={item.title} durationSeconds={item.durationSeconds} />)}
+          </div>
         </div>
       )}
     </section>

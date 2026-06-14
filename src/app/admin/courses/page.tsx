@@ -22,7 +22,7 @@ export default async function AdminCoursesPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              {['Title', 'Subject', 'Status', 'Modules', 'Purchases', 'Notes €', 'Full €', ''].map((h) => (
+              {['Title', 'Subject', 'Status', 'Modules', 'Purchases', 'Price €', ''].map((h) => (
                 <th key={h} style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--fg-3)', padding: '12px 16px', textAlign: 'left' }}>{h}</th>
               ))}
             </tr>
@@ -39,15 +39,14 @@ export default async function AdminCoursesPage() {
                 </td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>{c._count.modules}</td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>{c._count.purchases}</td>
-                <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>€{(c.notesPrice / 100).toFixed(0)}</td>
-                <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>€{(c.fullPrice / 100).toFixed(0)}</td>
+                <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>€{(c.price / 100).toFixed(0)}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Link href={`/admin/courses/${c.id}`} style={{ fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--orange-deep)', textDecoration: 'none' }}>Edit</Link>
                 </td>
               </tr>
             ))}
             {courses.length === 0 && (
-              <tr><td colSpan={8} style={{ padding: '32px 16px', textAlign: 'center', fontFamily: 'var(--font-body)', color: 'var(--fg-3)' }}>No courses yet.</td></tr>
+              <tr><td colSpan={7} style={{ padding: '32px 16px', textAlign: 'center', fontFamily: 'var(--font-body)', color: 'var(--fg-3)' }}>No courses yet.</td></tr>
             )}
           </tbody>
         </table>

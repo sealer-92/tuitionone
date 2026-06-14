@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
+import { writeAuditLog } from '@/lib/access'
 import Stripe from 'stripe'
 
 export const dynamic = 'force-dynamic'
@@ -45,9 +46,8 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session  = event.data.object as Stripe.Checkout.Session
     const courseId = session.metadata?.courseId
-    const tier     = session.metadata?.tier as 'NOTES_ONLY' | 'FULL'
 
-    if (!courseId || !tier) {
+    if (!courseId) {
       return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
     }
 
@@ -57,27 +57,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    const email    = session.customer_details?.email!
-    const name     = session.customer_details?.name ?? ''
+    const email       = session.customer_details?.email!
+    // Prefer the details captured on our enrol form; fall back to Stripe's.
+    const parentName  = session.metadata?.parentName  || session.customer_details?.name || ''
+    const phone       = session.metadata?.parentPhone || session.customer_details?.phone || null
+    const studentName = session.metadata?.studentName || null
+    const address     = session.metadata?.address     || null
 
-    // Find or create user
-    let user = await db.user.findUnique({ where: { email } })
-    if (!user) {
-      user = await db.user.create({ data: { email, name, role: 'STUDENT' } })
-    }
+    // Find or create the account holder (the paying parent), keeping their details current.
+    const user = await db.user.upsert({
+      where:  { email },
+      update: { name: parentName || undefined, phone: phone || undefined, address: address || undefined },
+      create: { email, name: parentName, phone, address, role: 'STUDENT' },
+    })
 
     // Update or create the purchase record
     await db.purchase.upsert({
       where: { stripeSessionId: session.id },
       update: {
         userId:                user.id,
+        studentName,
         status:                'COMPLETED',
         stripePaymentIntentId: session.payment_intent as string,
       },
       create: {
         userId:                user.id,
         courseId,
-        tier,
+        studentName,
         stripeSessionId:       session.id,
         stripePaymentIntentId: session.payment_intent as string,
         amountCents:           session.amount_total ?? 0,
@@ -86,7 +92,17 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    await sendMagicLinkEmail(email, name)
+    // Record the terms consent accepted during checkout, and audit the purchase.
+    const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+    await db.consentLog.create({
+      data: { userId: user.id, type: 'TERMS', version: '1.0', ipAddress: ip },
+    })
+    await writeAuditLog(user.id, 'purchase_completed', 'Purchase', session.id, ip, {
+      courseId,
+      amountCents: session.amount_total ?? 0,
+    })
+
+    await sendMagicLinkEmail(email, parentName)
   }
 
   if (event.type === 'charge.refunded') {

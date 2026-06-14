@@ -15,9 +15,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           Admin
         </div>
         {[
-          { href: '/admin',          label: 'Overview' },
-          { href: '/admin/courses',  label: 'Courses' },
-          { href: '/admin/users',    label: 'Users' },
+          { href: '/admin',            label: 'Overview' },
+          { href: '/admin/courses',    label: 'Courses' },
+          { href: '/admin/enrolments', label: 'Enrolments' },
+          { href: '/admin/users',      label: 'Users' },
         ].map((l) => (
           <Link key={l.href} href={l.href} style={{ display: 'block', padding: '10px 20px', fontFamily: 'var(--font-ui)', fontSize: 14, fontWeight: 500, color: 'rgba(245,239,228,0.8)', textDecoration: 'none' }}>
             {l.label}

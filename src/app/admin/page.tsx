@@ -38,7 +38,7 @@ export default async function AdminOverviewPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              {['Student', 'Course', 'Tier', 'Amount', 'Date'].map((h) => (
+              {['Student', 'Course', 'Amount', 'Date'].map((h) => (
                 <th key={h} style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--fg-3)', padding: '12px 16px', textAlign: 'left' }}>{h}</th>
               ))}
             </tr>
@@ -48,11 +48,6 @@ export default async function AdminOverviewPage() {
               <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--ink)' }}>{p.user.email}</td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--ink)' }}>{p.course.title}</td>
-                <td style={{ padding: '12px 16px' }}>
-                  <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999, background: p.tier === 'FULL' ? 'rgba(92,138,78,0.16)' : 'rgba(229,143,63,0.14)', color: p.tier === 'FULL' ? 'var(--leaf-deep)' : 'var(--orange-deep)' }}>
-                    {p.tier === 'FULL' ? 'Full' : 'Notes'}
-                  </span>
-                </td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>€{(p.amountCents / 100).toFixed(0)}</td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--fg-2)' }}>{p.createdAt.toLocaleDateString('en-IE')}</td>
               </tr>

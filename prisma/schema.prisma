@@ -24,11 +24,6 @@ enum ContentType {
   NOTES
 }
 
-enum AccessTier {
-  NOTES_ONLY
-  FULL
-}
-
 enum PurchaseStatus {
   PENDING
   COMPLETED
@@ -49,6 +44,7 @@ model User {
   emailVerified DateTime?
   name          String?
   phone         String?
+  address       String?
   role          Role      @default(STUDENT)
   createdAt     DateTime  @default(now())
   deletedAt     DateTime?
@@ -69,8 +65,7 @@ model Course {
   subject     String
   year        String
   description String?
-  notesPrice  Int
-  fullPrice   Int
+  price       Int
   status      CourseStatus @default(DRAFT)
   weeks       Int
   schedule    String
@@ -100,7 +95,6 @@ model ContentItem {
   title           String
   r2Key           String
   durationSeconds Int?
-  accessTier      AccessTier
   createdAt       DateTime    @default(now())
 
   module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
@@ -112,7 +106,7 @@ model Purchase {
   id                    String         @id @default(cuid())
   userId                String
   courseId              String
-  tier                  AccessTier
+  studentName           String?
   stripeSessionId       String         @unique
   stripePaymentIntentId String?
   amountCents           Int

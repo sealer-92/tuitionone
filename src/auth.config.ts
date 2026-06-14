@@ -15,6 +15,12 @@ export const authConfig = {
   },
   providers: [], // populated in auth.ts
   callbacks: {
+    // Surface the role from the JWT so the middleware (which uses this config alone)
+    // can authorise /admin. The role is written to the token in auth.ts at sign-in.
+    session({ session, token }) {
+      if (session.user) (session.user as { role?: string }).role = token.role as string | undefined
+      return session
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
       const isAdmin    = (auth?.user as { role?: string })?.role === 'ADMIN'

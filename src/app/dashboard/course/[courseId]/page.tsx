@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronRight, BookOpen, Video, Lock } from 'lucide-react'
+import { ChevronRight, BookOpen, Video } from 'lucide-react'
 
 export default async function CoursePage({ params }: { params: Promise<{ courseId: string }> }) {
   const session = await auth()
@@ -59,10 +59,9 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
                     </span>
                   )}
                   {mod.contentItems.filter((i) => i.type === 'VIDEO').length > 0 && (
-                    <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4, color: 'var(--fg-3)', opacity: purchase.tier === 'FULL' ? 1 : 0.5 }}>
-                      {purchase.tier === 'FULL' ? <Video size={12} /> : <Lock size={12} />}
+                    <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4, color: 'var(--fg-3)' }}>
+                      <Video size={12} />
                       {mod.contentItems.filter((i) => i.type === 'VIDEO').length} videos
-                      {purchase.tier !== 'FULL' && ' (upgrade to unlock)'}
                     </span>
                   )}
                 </div>

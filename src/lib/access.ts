@@ -22,18 +22,9 @@ export async function canAccessItem(
     return false
   }
 
-  const allowed = purchase.tier === 'FULL' || item.accessTier === 'NOTES_ONLY'
+  await writeAuditLog(userId, 'content_access', 'ContentItem', itemId, ipAddress)
 
-  await writeAuditLog(
-    userId,
-    allowed ? 'content_access' : 'content_access_denied',
-    'ContentItem',
-    itemId,
-    ipAddress,
-    { tier: purchase.tier, itemAccessTier: item.accessTier } as Prisma.InputJsonValue,
-  )
-
-  return allowed
+  return true
 }
 
 export async function writeAuditLog(

@@ -11,6 +11,7 @@ interface FormData {
   parentEmail: string
   parentPhone: string
   studentName: string
+  address:     string
   courseId:    string
   terms:       boolean
 }
@@ -25,6 +26,7 @@ export function EnrolForm() {
     parentEmail: '',
     parentPhone: '',
     studentName: '',
+    address:     '',
     courseId:    initialCourseId,
     terms:       false,
   })
@@ -38,7 +40,14 @@ export function EnrolForm() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseId: data.courseId, tier: 'NOTES_ONLY' }),
+        body: JSON.stringify({
+          courseId:    data.courseId,
+          parentName:  data.parentName,
+          parentEmail: data.parentEmail,
+          parentPhone: data.parentPhone,
+          studentName: data.studentName,
+          address:     data.address,
+        }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -120,9 +129,21 @@ export function EnrolForm() {
               <span style={labelStyle}>Phone</span>
               <input style={fieldStyle} value={data.parentPhone} onChange={(e) => upd('parentPhone', e.target.value)} placeholder="087 ..." />
             </label>
+            <label style={{ gridColumn: '1 / -1' }}>
+              <span style={labelStyle}>Address</span>
+              <textarea style={{ ...fieldStyle, minHeight: 64, resize: 'vertical' }} value={data.address} onChange={(e) => upd('address', e.target.value)} placeholder="Street, town, county, Eircode" />
+            </label>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
-            <Button variant="primary" size="lg" onClick={() => setStep(2)} icon={<ArrowRight size={16} />}>Continue</Button>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => setStep(2)}
+              icon={<ArrowRight size={16} />}
+              disabled={!data.parentName || !data.studentName || !data.parentEmail || !data.parentPhone || !data.address}
+            >
+              Continue
+            </Button>
           </div>
         </div>
       )}
@@ -178,15 +199,15 @@ export function EnrolForm() {
               <div style={{ color: 'var(--ink)', fontWeight: 600 }}>{selectedCourse ? `${selectedCourse.title} · ${selectedCourse.year}` : '—'}</div>
               <div style={{ color: 'var(--fg-3)' }}>Schedule</div>
               <div style={{ color: 'var(--ink)' }}>{selectedCourse ? `${selectedCourse.day} · ${selectedCourse.time}` : '—'}</div>
-              <div style={{ color: 'var(--fg-3)' }}>Full course fee</div>
-              <div style={{ color: 'var(--ink)', fontWeight: 700 }}>€{selectedCourse?.price ?? '—'}</div>
-              <div style={{ color: 'var(--fg-3)' }}>Deposit due today</div>
-              <div style={{ fontFamily: 'var(--font-ui)', color: 'var(--orange-deep)', fontWeight: 800, fontSize: 18 }}>€50</div>
+              <div style={{ color: 'var(--fg-3)' }}>Full course access</div>
+              <div style={{ color: 'var(--ink)' }}>All notes &amp; videos</div>
+              <div style={{ color: 'var(--fg-3)' }}>Total due today</div>
+              <div style={{ fontFamily: 'var(--font-ui)', color: 'var(--orange-deep)', fontWeight: 800, fontSize: 18 }}>€{selectedCourse?.price ?? '—'}</div>
             </div>
           </div>
           <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-1)', cursor: 'pointer' }}>
             <input type="checkbox" checked={data.terms} onChange={(e) => upd('terms', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--orange)', marginTop: 2, cursor: 'pointer' }} />
-            <span>I&apos;ve read the terms — full payment is due by the course start date, and late payments forfeit the deposit.</span>
+            <span>I&apos;ve read the terms — this is a full-course payment that unlocks all notes and videos for the course.</span>
           </label>
           {checkoutError && (
             <div style={{ background: 'rgba(181,72,60,0.08)', border: '1px solid rgba(181,72,60,0.25)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: '#B5483C' }}>
@@ -196,7 +217,7 @@ export function EnrolForm() {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
             <Button variant="ghost" onClick={() => setStep(2)} disabled={loading}>← Back</Button>
             <Button variant="primary" size="lg" onClick={handleCheckout} icon={<Lock size={16} />} disabled={!data.terms || loading}>
-              {loading ? 'Redirecting…' : 'Pay €50 deposit'}
+              {loading ? 'Redirecting…' : `Pay €${selectedCourse?.price ?? ''}`}
             </Button>
           </div>
         </div>

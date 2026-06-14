@@ -19,10 +19,17 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { courseId, tier } = body as { courseId: string; tier: 'NOTES_ONLY' | 'FULL' }
+  const { courseId, parentName, parentEmail, parentPhone, studentName, address } = body as {
+    courseId: string
+    parentName?: string
+    parentEmail?: string
+    parentPhone?: string
+    studentName?: string
+    address?: string
+  }
 
-  if (!courseId || !tier) {
-    return NextResponse.json({ error: 'Missing courseId or tier' }, { status: 400 })
+  if (!courseId) {
+    return NextResponse.json({ error: 'Missing courseId' }, { status: 400 })
   }
 
   const course = await db.course.findUnique({ where: { id: courseId, status: 'ACTIVE' } })
@@ -30,26 +37,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Course not found' }, { status: 404 })
   }
 
-  const amountCents = tier === 'NOTES_ONLY' ? course.notesPrice : course.fullPrice
-  const tierLabel   = tier === 'NOTES_ONLY' ? 'Notes only' : 'Notes + Videos'
-
   const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
+    customer_email: parentEmail || undefined,
     line_items: [
       {
         price_data: {
           currency: 'eur',
           product_data: {
-            name: `${course.title} — ${tierLabel}`,
+            name: course.title,
             description: `${course.weeks}-week course · ${course.schedule}`,
           },
-          unit_amount: amountCents,
+          unit_amount: course.price,
         },
         quantity: 1,
       },
     ],
-    metadata: { courseId, tier },
+    // Enrolment details are echoed back to us via the webhook (Stripe metadata values max 500 chars).
+    metadata: {
+      courseId,
+      parentName:  parentName?.slice(0, 500) ?? '',
+      parentPhone: parentPhone?.slice(0, 500) ?? '',
+      studentName: studentName?.slice(0, 500) ?? '',
+      address:     address?.slice(0, 500) ?? '',
+    },
     success_url: `${process.env.NEXTAUTH_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url:  `${process.env.NEXTAUTH_URL}/courses`,
     billing_address_collection: 'auto',
