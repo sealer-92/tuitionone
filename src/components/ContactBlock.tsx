@@ -48,7 +48,7 @@ function ContactTile({ item, dark }: { item: typeof items[0]; dark?: boolean }) 
 
 export function ContactBlock({ dark }: { dark?: boolean }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
       {items.map((it) => <ContactTile key={it.label} item={it} dark={dark} />)}
     </div>
   )

@@ -19,6 +19,11 @@ enum CourseStatus {
   ARCHIVED
 }
 
+enum CourseFormat {
+  VIDEO_AND_BOOKLET
+  BOOKLET_ONLY
+}
+
 enum ContentType {
   VIDEO
   NOTES
@@ -30,10 +35,22 @@ enum PurchaseStatus {
   REFUNDED
 }
 
+enum PurchaseOption {
+  FULL
+  FULL_PHYSICAL
+  DIGITAL_BOOKLET
+  PHYSICAL_BOOKLET
+}
+
 enum ConsentType {
   TERMS
   PRIVACY
   MARKETING
+}
+
+enum TicketStatus {
+  OPEN
+  RESOLVED
 }
 
 // ─── Users ────────────────────────────────────────────────────────────────────
@@ -44,7 +61,11 @@ model User {
   emailVerified DateTime?
   name          String?
   phone         String?
-  address       String?
+  addressLine1  String?
+  addressLine2  String?
+  city          String?
+  county        String?
+  eircode       String?
   role          Role      @default(STUDENT)
   createdAt     DateTime  @default(now())
   deletedAt     DateTime?
@@ -52,6 +73,7 @@ model User {
   purchases   Purchase[]
   consentLogs ConsentLog[]
   auditLogs   AuditLog[]
+  tickets     SupportTicket[]
   accounts    Account[]
   sessions    Session[]
 }
@@ -65,7 +87,12 @@ model Course {
   subject     String
   year        String
   description String?
-  price       Int
+  format      CourseFormat @default(VIDEO_AND_BOOKLET)
+  // Per-option prices in cents (EUR). Only the fields valid for `format` are used.
+  fullPriceCents            Int?
+  fullPhysicalPriceCents    Int?
+  digitalBookletPriceCents  Int?
+  physicalBookletPriceCents Int?
   status      CourseStatus @default(DRAFT)
   weeks       Int
   schedule    String
@@ -107,6 +134,13 @@ model Purchase {
   userId                String
   courseId              String
   studentName           String?
+  option                PurchaseOption @default(FULL)
+  // Snapshot of the shipping address captured at checkout.
+  shipLine1             String?
+  shipLine2             String?
+  shipCity              String?
+  shipCounty            String?
+  shipEircode           String?
   stripeSessionId       String         @unique
   stripePaymentIntentId String?
   amountCents           Int
@@ -149,6 +183,22 @@ model AuditLog {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+// ─── Support ──────────────────────────────────────────────────────────────────
+
+model SupportTicket {
+  id        String       @id @default(cuid())
+  userId    String
+  subject   String
+  message   String
+  status    TicketStatus @default(OPEN)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 // ─── Auth.js tables ───────────────────────────────────────────────────────────

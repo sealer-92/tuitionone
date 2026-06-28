@@ -22,7 +22,7 @@ export async function GET() {
       email:     user.email,
       name:      user.name,
       phone:     user.phone,
-      address:   user.address,
+      address:   [user.addressLine1, user.addressLine2, user.city, user.county, user.eircode].filter(Boolean).join(', ') || null,
       createdAt: user.createdAt,
       role:      user.role,
     },

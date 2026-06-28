@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { db } from './db'
+import { grantsNotes, grantsVideo } from './options'
 
 export async function canAccessItem(
   userId: string,
@@ -13,11 +14,19 @@ export async function canAccessItem(
 
   if (!item) return false
 
-  const purchase = await db.purchase.findFirst({
+  // A user may hold more than one completed purchase for a course; grant by the
+  // most permissive option they own.
+  const purchases = await db.purchase.findMany({
     where: { userId, courseId: item.module.courseId, status: 'COMPLETED' },
+    select: { option: true },
   })
 
-  if (!purchase) {
+  const allowed =
+    item.type === 'VIDEO'
+      ? purchases.some((p) => grantsVideo(p.option))
+      : purchases.some((p) => grantsNotes(p.option))
+
+  if (!allowed) {
     await writeAuditLog(userId, 'content_access_denied', 'ContentItem', itemId, ipAddress)
     return false
   }

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { VideoPlayer } from '@/components/VideoPlayer'
 import { NotesPdfViewer } from '@/components/NotesPdfViewer'
+import { grantsNotes, grantsVideo } from '@/lib/options'
 
 export default async function ModulePage({ params }: { params: Promise<{ courseId: string; moduleId: string }> }) {
   const session = await auth()
@@ -12,10 +13,14 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
 
   const { courseId, moduleId } = await params
 
-  const purchase = await db.purchase.findFirst({
+  const purchases = await db.purchase.findMany({
     where: { userId: session.user.id, courseId, status: 'COMPLETED' },
+    select: { option: true },
   })
-  if (!purchase) notFound()
+  if (purchases.length === 0) notFound()
+
+  const canNotes = purchases.some((p) => grantsNotes(p.option))
+  const canVideo = purchases.some((p) => grantsVideo(p.option))
 
   const mod = await db.module.findUnique({
     where: { id: moduleId },
@@ -23,8 +28,8 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
   })
   if (!mod || mod.courseId !== courseId) notFound()
 
-  const notes  = mod.contentItems.filter((i) => i.type === 'NOTES')
-  const videos = mod.contentItems.filter((i) => i.type === 'VIDEO')
+  const notes  = canNotes ? mod.contentItems.filter((i) => i.type === 'NOTES') : []
+  const videos = canVideo ? mod.contentItems.filter((i) => i.type === 'VIDEO') : []
 
   return (
     <section style={{ maxWidth: 900, margin: '0 auto', padding: 'clamp(40px, 6vw, 80px) var(--container-pad)' }}>

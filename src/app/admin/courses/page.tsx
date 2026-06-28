@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import Link from 'next/link'
+import { optionsForCourse } from '@/lib/options'
 
 export const metadata = { title: 'Courses — Admin' }
 
@@ -18,17 +19,20 @@ export default async function AdminCoursesPage() {
         </Link>
       </div>
 
-      <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 14, overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 720 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              {['Title', 'Subject', 'Status', 'Modules', 'Purchases', 'Price €', ''].map((h) => (
+              {['Title', 'Subject', 'Status', 'Modules', 'Purchases', 'From €', ''].map((h) => (
                 <th key={h} style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--fg-3)', padding: '12px 16px', textAlign: 'left' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {courses.map((c) => (
+            {courses.map((c) => {
+              const opts = optionsForCourse(c)
+              const fromPrice = opts.length ? Math.min(...opts.map((o) => o.priceCents)) / 100 : null
+              return (
               <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }}>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{c.title}</td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-2)' }}>{c.subject}</td>
@@ -39,12 +43,13 @@ export default async function AdminCoursesPage() {
                 </td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>{c._count.modules}</td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>{c._count.purchases}</td>
-                <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>€{(c.price / 100).toFixed(0)}</td>
+                <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>{fromPrice != null ? `€${fromPrice}` : '—'}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <Link href={`/admin/courses/${c.id}`} style={{ fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--orange-deep)', textDecoration: 'none' }}>Edit</Link>
                 </td>
               </tr>
-            ))}
+              )
+            })}
             {courses.length === 0 && (
               <tr><td colSpan={7} style={{ padding: '32px 16px', textAlign: 'center', fontFamily: 'var(--font-body)', color: 'var(--fg-3)' }}>No courses yet.</td></tr>
             )}

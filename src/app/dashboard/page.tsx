@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import { DashboardCourseCard } from '@/components/DashboardCourseCard'
+import { RaiseIssueForm } from '@/components/RaiseIssueForm'
 
 export const metadata = { title: 'My Courses — Tuition One' }
 
@@ -11,7 +12,16 @@ export default async function DashboardPage() {
 
   const purchases = await db.purchase.findMany({
     where: { userId: session.user.id, status: 'COMPLETED' },
-    include: { course: { include: { modules: { include: { contentItems: true } } } } },
+    select: {
+      id: true,
+      option: true,
+      course: {
+        select: {
+          id: true, title: true, subject: true, year: true, weeks: true, schedule: true,
+          modules: { select: { id: true, contentItems: { select: { type: true } } } },
+        },
+      },
+    },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -38,6 +48,10 @@ export default async function DashboardPage() {
           ))}
         </div>
       )}
+
+      <div style={{ marginTop: 40 }}>
+        <RaiseIssueForm />
+      </div>
     </section>
   )
 }

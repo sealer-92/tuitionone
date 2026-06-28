@@ -5,9 +5,10 @@ import { CourseList }   from '@/components/CourseList'
 import { Testimonial }  from '@/components/Testimonial'
 import { ContactBlock } from '@/components/ContactBlock'
 import { Button }       from '@/components/Button'
-import { COURSES }      from '@/lib/courses'
+import { getActiveCourses } from '@/lib/catalog'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const courses = await getActiveCourses()
   return (
     <>
       <Hero />
@@ -26,7 +27,7 @@ export default function HomePage() {
         title="Spring 2026 courses"
         subtitle="Saturdays at our Portlaoise centre. A €50 deposit secures the place."
       >
-        <CourseList courses={COURSES.slice(0, 4)} />
+        <CourseList courses={courses.slice(0, 4)} />
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
           <Button variant="secondary" size="lg" href="/courses">See all courses →</Button>
         </div>

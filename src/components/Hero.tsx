@@ -19,7 +19,7 @@ export function Hero() {
       color: 'var(--chalk)',
       padding: 'clamp(48px, 8vw, 96px) var(--container-pad)',
     }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 56, alignItems: 'center' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 56, alignItems: 'center' }}>
         <div>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--orange)', marginBottom: 18 }}>
             Now enrolling · Spring 2026
@@ -46,8 +46,8 @@ export function Hero() {
           </div>
         </div>
 
-        <div style={{ position: 'relative', height: 460 }}>
-          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: 500, margin: '0 auto' }}>
+          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
             {/* Notebook */}
             <g transform="rotate(-7 380 110)">
               <rect x="280" y="20" width="200" height="240" rx="6" fill={PAPER} />

@@ -1,22 +1,24 @@
 import { Suspense }   from 'react'
 import { Section }    from '@/components/Section'
 import { EnrolForm }  from '@/components/EnrolForm'
+import { getActiveCourses } from '@/lib/catalog'
 
 export const metadata = {
   title: 'Enrol — Tuition One Grinds',
-  description: 'Reserve a place on a Saturday grinds course. Three short steps — pay in full to unlock all notes and videos.',
+  description: 'Reserve a place on a Saturday grinds course. Choose videos, digital or printed booklets — pay securely online.',
 }
 
-export default function EnrolPage() {
+export default async function EnrolPage() {
+  const courses = await getActiveCourses()
   return (
     <Section
       narrow
       eyebrow="Reserve a place"
       title="Enrol your child"
-      subtitle="Three short steps. One payment unlocks all course notes and videos."
+      subtitle="Three short steps. Choose the course and the option that suits you."
     >
       <Suspense>
-        <EnrolForm />
+        <EnrolForm courses={courses} />
       </Suspense>
     </Section>
   )

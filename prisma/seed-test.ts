@@ -8,7 +8,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
 const STUDENT_EMAIL = "student.test@example.com";
-const COURSE_IDS = ["hm-5", "hc-6"];
+const COURSE_IDS = ["hl-maths", "hl-chemistry"];
 
 async function main() {
   const user = await db.user.upsert({
@@ -26,8 +26,9 @@ async function main() {
       create: {
         userId: user.id,
         courseId,
+        option: "FULL",
         stripeSessionId: `seed-test-${courseId}`,
-        amountCents: course.price,
+        amountCents: course.fullPriceCents ?? course.digitalBookletPriceCents ?? 0,
         currency: "eur",
         status: "COMPLETED",
       },

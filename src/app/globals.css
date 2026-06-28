@@ -164,6 +164,29 @@ a:focus-visible {
   border-radius: var(--radius-xs);
 }
 
+/* ─── Responsive helpers ─────────────────────────────────────────────── */
+
+/* Header nav: inline links on desktop, hamburger on mobile. */
+@media (max-width: 760px) {
+  .desktop-only { display: none !important; }
+}
+@media (min-width: 761px) {
+  .mobile-only { display: none !important; }
+}
+
+/* Two-column form grid collapses to one column on narrow screens. */
+@media (max-width: 560px) {
+  .enrol-grid-2 { grid-template-columns: 1fr !important; }
+}
+
+/* Admin shell: fixed sidebar becomes a horizontal top bar on mobile. */
+@media (max-width: 760px) {
+  .admin-shell { flex-direction: column !important; }
+  .admin-sidebar { width: 100% !important; padding: 16px var(--container-pad) !important; }
+  .admin-nav { display: flex !important; flex-wrap: wrap; gap: 4px; }
+  .admin-nav a { padding: 8px 12px !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

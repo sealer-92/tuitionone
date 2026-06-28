@@ -4,9 +4,6 @@ import { useState } from 'react'
 import { Course } from '@/lib/courses'
 import { CourseCard } from './CourseCard'
 
-const YEARS    = ['All', '5th Year', '6th Year', 'Junior Cert']
-const SUBJECTS = ['All', 'Maths', 'Chemistry', 'Science']
-
 interface CourseListProps {
   courses: Course[]
   dark?: boolean
@@ -15,6 +12,9 @@ interface CourseListProps {
 export function CourseList({ courses, dark }: CourseListProps) {
   const [yearFilter,    setYearFilter]    = useState('All')
   const [subjectFilter, setSubjectFilter] = useState('All')
+
+  const YEARS    = ['All', ...Array.from(new Set(courses.map((c) => c.year)))]
+  const SUBJECTS = ['All', ...Array.from(new Set(courses.map((c) => c.subject)))]
 
   const filtered = courses.filter((c) =>
     (yearFilter    === 'All' || c.year    === yearFilter) &&

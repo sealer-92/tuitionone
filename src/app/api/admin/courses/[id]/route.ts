@@ -3,10 +3,11 @@ import { requireAdmin } from '@/lib/admin'
 import { db } from '@/lib/db'
 import { buildCourseData, hasAnyPrice } from '@/lib/courseInput'
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await requireAdmin()
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
+  const { id } = await params
   const body = await req.json()
   const { slug, title, subject, year, description, weeks, schedule } = body
 
@@ -19,10 +20,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Set a price for at least one option' }, { status: 400 })
   }
 
-  const existing = await db.course.findUnique({ where: { slug } })
-  if (existing) return NextResponse.json({ error: 'A course with that slug already exists' }, { status: 409 })
+  // Slug must stay unique across other courses.
+  const clash = await db.course.findFirst({ where: { slug, NOT: { id } } })
+  if (clash) return NextResponse.json({ error: 'A course with that slug already exists' }, { status: 409 })
 
-  const course = await db.course.create({
+  await db.course.update({
+    where: { id },
     data: {
       slug,
       title,
@@ -35,5 +38,5 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  return NextResponse.json({ id: course.id })
+  return NextResponse.json({ id })
 }

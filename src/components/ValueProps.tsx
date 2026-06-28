@@ -8,7 +8,7 @@ const items = [
 
 export function ValueProps() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 32 }}>
       {items.map((it, i) => (
         <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(229,143,63,0.14)', color: 'var(--orange-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

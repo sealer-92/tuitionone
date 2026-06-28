@@ -31,7 +31,7 @@ async function upload(key: string, body: Buffer, contentType: string) {
 }
 
 // Two modules per course; each module gets one PDF + one video.
-const targetCourses = ["hm-5", "hc-6"];
+const targetCourses = ["hl-maths", "hl-chemistry"];
 const modulesPerCourse = [
   { title: "Module 1 — Foundations" },
   { title: "Module 2 — Core Techniques" },

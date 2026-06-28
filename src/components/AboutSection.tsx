@@ -9,7 +9,7 @@ const included = [
 
 export function AboutSection() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 56, alignItems: 'center' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 56, alignItems: 'center' }}>
       {/* Classroom placeholder */}
       <div style={{ position: 'relative', aspectRatio: '4/5', borderRadius: 20, overflow: 'hidden', background: 'var(--sage-tan-soft)' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--sage-tan-soft) 0%, var(--sage-tan) 100%)' }} />
@@ -36,7 +36,7 @@ export function AboutSection() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 17, lineHeight: 1.6, color: 'var(--fg-2)', marginTop: 20 }}>
           We keep groups small so every student gets called on, every week — and we write our own workbooks so the homework matches the lesson.
         </p>
-        <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+        <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 18 }}>
           {included.map((it, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(229,143,63,0.14)', color: 'var(--orange-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

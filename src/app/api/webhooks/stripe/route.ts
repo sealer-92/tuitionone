@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 import { writeAuditLog } from '@/lib/access'
+import { PurchaseOption } from '@prisma/client'
 import Stripe from 'stripe'
+
+const VALID_OPTIONS: PurchaseOption[] = ['FULL', 'FULL_PHYSICAL', 'DIGITAL_BOOKLET', 'PHYSICAL_BOOKLET']
 
 export const dynamic = 'force-dynamic'
 
@@ -57,18 +60,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    const email       = session.customer_details?.email!
+    const email = session.customer_details?.email
+    if (!email) return NextResponse.json({ error: 'Missing customer email' }, { status: 400 })
     // Prefer the details captured on our enrol form; fall back to Stripe's.
     const parentName  = session.metadata?.parentName  || session.customer_details?.name || ''
     const phone       = session.metadata?.parentPhone || session.customer_details?.phone || null
     const studentName = session.metadata?.studentName || null
-    const address     = session.metadata?.address     || null
+    const rawOption   = session.metadata?.option as PurchaseOption | undefined
+    const option      = rawOption && VALID_OPTIONS.includes(rawOption) ? rawOption : 'FULL'
+    const shipLine1   = session.metadata?.shipLine1   || null
+    const shipLine2   = session.metadata?.shipLine2   || null
+    const shipCity    = session.metadata?.shipCity    || null
+    const shipCounty  = session.metadata?.shipCounty  || null
+    const shipEircode = session.metadata?.shipEircode || null
 
     // Find or create the account holder (the paying parent), keeping their details current.
     const user = await db.user.upsert({
       where:  { email },
-      update: { name: parentName || undefined, phone: phone || undefined, address: address || undefined },
-      create: { email, name: parentName, phone, address, role: 'STUDENT' },
+      update: {
+        name: parentName || undefined, phone: phone || undefined,
+        addressLine1: shipLine1 || undefined, addressLine2: shipLine2 || undefined,
+        city: shipCity || undefined, county: shipCounty || undefined, eircode: shipEircode || undefined,
+      },
+      create: {
+        email, name: parentName, phone, role: 'STUDENT',
+        addressLine1: shipLine1, addressLine2: shipLine2, city: shipCity, county: shipCounty, eircode: shipEircode,
+      },
     })
 
     // Update or create the purchase record
@@ -77,6 +94,8 @@ export async function POST(req: NextRequest) {
       update: {
         userId:                user.id,
         studentName,
+        option,
+        shipLine1, shipLine2, shipCity, shipCounty, shipEircode,
         status:                'COMPLETED',
         stripePaymentIntentId: session.payment_intent as string,
       },
@@ -84,6 +103,8 @@ export async function POST(req: NextRequest) {
         userId:                user.id,
         courseId,
         studentName,
+        option,
+        shipLine1, shipLine2, shipCity, shipCounty, shipEircode,
         stripeSessionId:       session.id,
         stripePaymentIntentId: session.payment_intent as string,
         amountCents:           session.amount_total ?? 0,
