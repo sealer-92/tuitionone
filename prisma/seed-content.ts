@@ -22,6 +22,9 @@ const BUCKET = process.env.CLOUDFLARE_R2_BUCKET!;
 const pdfBytes = readFileSync("test-assets/sample.pdf");
 const mp4Bytes = readFileSync("test-assets/sample.mp4");
 
+const slugify = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 50);
+
 async function upload(key: string, body: Buffer, contentType: string) {
   await r2.send(new PutObjectCommand({ Bucket: BUCKET, Key: key, Body: body, ContentType: contentType }));
   return key;
@@ -42,16 +45,20 @@ async function seedCourse(courseId: string) {
   await db.module.deleteMany({ where: { courseId } });
 
   for (let i = 0; i < modulesPerCourse.length; i++) {
+    const order = i + 1;
     const mod = await db.module.create({
-      data: { courseId, order: i + 1, title: modulesPerCourse[i].title },
+      data: { courseId, order, title: modulesPerCourse[i].title },
     });
 
-    const notesKey = await upload(`modules/${mod.id}/notes/sample.pdf`, pdfBytes, "application/pdf");
+    const modulePart = `module-${String(order).padStart(2, "0")}-${slugify(modulesPerCourse[i].title)}`;
+    const prefix = `courses/${course.slug}/${modulePart}`;
+
+    const notesKey = await upload(`${prefix}/notes/sample.pdf`, pdfBytes, "application/pdf");
     await db.contentItem.create({
       data: { moduleId: mod.id, type: "NOTES", title: `${modulesPerCourse[i].title} — Notes`, r2Key: notesKey },
     });
 
-    const videoKey = await upload(`modules/${mod.id}/videos/sample.mp4`, mp4Bytes, "video/mp4");
+    const videoKey = await upload(`${prefix}/videos/sample.mp4`, mp4Bytes, "video/mp4");
     await db.contentItem.create({
       data: { moduleId: mod.id, type: "VIDEO", title: `${modulesPerCourse[i].title} — Lesson`, r2Key: videoKey, durationSeconds: 10 },
     });
