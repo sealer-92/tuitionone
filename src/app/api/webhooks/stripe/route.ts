@@ -55,9 +55,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
     }
 
-    // Idempotency: skip if already processed
-    const existing = await db.purchase.findUnique({ where: { stripeSessionId: session.id } })
+    // Idempotency: skip DB writes if already processed, but always attempt email
+    // (a prior attempt may have saved the purchase then failed on the email send)
+    const existing = await db.purchase.findUnique({
+      where: { stripeSessionId: session.id },
+      include: { user: true },
+    })
     if (existing?.status === 'COMPLETED') {
+      await sendMagicLinkEmail(existing.user.email, existing.user.name ?? '')
       return NextResponse.json({ received: true })
     }
 
