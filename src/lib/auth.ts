@@ -19,7 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const { Resend: ResendClient } = await import('resend')
         const resend = new ResendClient(process.env.RESEND_API_KEY!)
         try {
-          await resend.emails.send({
+          const { error } = await resend.emails.send({
             from: process.env.RESEND_FROM!,
             to: email,
             subject: 'Sign in to Tuition One',
@@ -38,6 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             </div>
           `,
           })
+          if (error) throw new Error(`Resend: ${error.message}`)
         } catch (err) {
           // In dev the link is logged above, so don't block sign-in if email send fails.
           if (process.env.NODE_ENV !== 'development') throw err

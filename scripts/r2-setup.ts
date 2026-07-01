@@ -13,7 +13,12 @@ const r2 = new S3Client({
   },
 });
 const BUCKET = process.env.CLOUDFLARE_R2_BUCKET!;
-const origins = ["http://localhost:3000", "http://127.0.0.1:3000"];
+const origins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://tuitionone-git-master-david-seale-s-projects.vercel.app",
+  "https://*.vercel.app",
+];
 
 async function main() {
   // Create the bucket (ignore if it already exists).
