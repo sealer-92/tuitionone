@@ -4,39 +4,34 @@ import { useState } from 'react'
 
 const TESTIMONIALS = [
   {
-    name: 'Aoife M.',
-    initials: 'AM',
+    name: "Jack's mum",
+    initials: 'J',
     avatarBg: '#E58F3F',
-    quote: "Our daughter went from a worried C in Higher Maths to a comfortable B+ in just one term. The class is small, the workbook is brilliant, and she actually looks forward to Saturdays now.",
-    label: '6th Year · Higher Maths',
+    quote: "I would highly recommend Paul for maths grinds. Jack said it all made sense with Paul — he explained everything and gave him notes from each session which he found very helpful. Jack found the Leaving Cert maths paper much easier after grinds and did very well. It has made a big difference to his overall LC points. Much appreciated.",
   },
   {
-    name: 'Ciarán D.',
-    initials: 'CD',
+    name: 'Ava',
+    initials: 'A',
     avatarBg: '#2C4B3F',
-    quote: "The one-to-one attention in such a small group made all the difference. My son finally understood topics that had confused him for two years — his confidence is completely transformed.",
-    label: '6th Year · Higher Maths',
+    quote: "Hi Paul thank you so much for all your help. I'm delighted with my results. I wouldn't have been able to do it without you.",
   },
   {
-    name: 'Siobhán K.',
-    initials: 'SK',
+    name: "Charlie's dad",
+    initials: 'C',
     avatarBg: '#5C8A4E',
-    quote: "We tried two other grinds services before finding TuitionOne. The structured workbooks and the Saturday routine kept her on track all year. I can't recommend them highly enough.",
-    label: '5th Year · Higher Maths',
+    quote: "Hi Paul — he got an H4 in his maths, he is delighted as he failed the mocks. Thanks so much.",
   },
   {
-    name: "Rían O'B.",
-    initials: 'RO',
+    name: "Morgan's mum",
+    initials: 'M',
     avatarBg: '#486C8A',
-    quote: "My teacher at school covers the material too fast. Here I could ask questions and get real answers. Best decision we made for the Leaving Cert — wish I had found it sooner.",
-    label: '6th Year · Higher Maths',
+    quote: "Hi Paul, thank you for all the help you have given Morgan the last few weeks. It's been a great help to him. If you can, keep him on the list for September. Take care, and have a lovely summer. Thanks, Geraldine.",
   },
   {
-    name: 'Niamh F.',
-    initials: 'NF',
+    name: "Kayla's mum",
+    initials: 'K',
     avatarBg: '#C97529',
-    quote: "I went from dreading the exam to actually enjoying problem-solving. The small class means you can't hide — in the best way. I feel genuinely prepared now.",
-    label: '5th Year · Higher Maths',
+    quote: "Hi Paul, look at this for a result — poor Kayla is bawling with joy, she's shaking, she can't believe it. Thank you so much for taking her in for grinds. I'm absolutely over the moon.",
   },
 ]
 
@@ -55,9 +50,8 @@ function Avatar({ initials, bg }: { initials: string; bg: string }) {
         flexShrink: 0,
         fontFamily: 'var(--font-ui)',
         fontWeight: 700,
-        fontSize: 14,
+        fontSize: 16,
         color: '#fff',
-        letterSpacing: '0.04em',
         userSelect: 'none',
       }}
     >
@@ -126,23 +120,13 @@ export function Testimonial() {
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Avatar initials={t.initials} bg={t.avatarBg} />
-              <div>
-                <div style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontWeight: 700,
-                  fontSize: 14,
-                  color: 'var(--ink)',
-                }}>
-                  {t.name}
-                </div>
-                <div style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 13,
-                  color: 'var(--fg-2)',
-                  marginTop: 2,
-                }}>
-                  {t.label}
-                </div>
+              <div style={{
+                fontFamily: 'var(--font-ui)',
+                fontWeight: 700,
+                fontSize: 14,
+                color: 'var(--ink)',
+              }}>
+                {t.name}
               </div>
             </div>
           </div>
