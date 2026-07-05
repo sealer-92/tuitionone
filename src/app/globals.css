@@ -164,6 +164,53 @@ a:focus-visible {
   border-radius: var(--radius-xs);
 }
 
+/* ─── Testimonial carousel ───────────────────────────────────────────── */
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 860px) {
+  .testimonial-grid { grid-template-columns: repeat(2, 1fr); }
+  .testimonial-card-3 { display: none !important; }
+}
+
+@media (max-width: 560px) {
+  .testimonial-grid { grid-template-columns: 1fr; }
+  .testimonial-card-2 { display: none !important; }
+  .testimonial-card-3 { display: none !important; }
+}
+
+.testimonial-arrow-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  background: var(--paper);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.testimonial-arrow-btn:hover {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.testimonial-arrow-btn svg path {
+  stroke: var(--ink);
+  transition: stroke var(--dur-fast) var(--ease);
+}
+
+.testimonial-arrow-btn:hover svg path {
+  stroke: #fff;
+}
+
 /* ─── Responsive helpers ─────────────────────────────────────────────── */
 
 /* Header nav: inline links on desktop, hamburger on mobile. */

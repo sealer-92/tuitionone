@@ -33,7 +33,11 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <Section narrow>
+      <Section
+        eyebrow="Student stories"
+        title="What our students say"
+        subtitle="Real results from Leaving Cert students across Laois. Here's what they and their parents tell us."
+      >
         <Testimonial />
       </Section>
 
