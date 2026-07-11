@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Course } from '@/lib/courses'
 import { optionsForCourse } from '@/lib/options'
 import { Button } from './Button'
@@ -11,8 +10,6 @@ interface CourseCardProps {
 }
 
 export function CourseCard({ course, dark }: CourseCardProps) {
-  const [hover, setHover] = useState(false)
-
   const surface: React.CSSProperties = dark
     ? { background: 'var(--chalkboard-deep)', border: '1px solid rgba(255,255,255,0.10)', color: 'var(--chalk)' }
     : { background: 'var(--paper)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)', color: 'var(--ink)' }
@@ -28,8 +25,7 @@ export function CourseCard({ course, dark }: CourseCardProps) {
 
   return (
     <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      className="card-lift"
       style={{
         ...surface,
         borderRadius: 16,
@@ -39,8 +35,6 @@ export function CourseCard({ course, dark }: CourseCardProps) {
         gap: 10,
         position: 'relative',
         overflow: 'hidden',
-        transform: hover ? 'translateY(-2px)' : 'none',
-        transition: 'transform 120ms var(--ease)',
       }}
     >
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: eyebrowColor }}>

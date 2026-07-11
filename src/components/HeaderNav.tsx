@@ -29,7 +29,7 @@ export function HeaderNav() {
       {/* Desktop: inline links */}
       <nav className="desktop-only" style={{ display: 'flex', gap: 28 }}>
         {NAV.map((l) => (
-          <Link key={l.href} href={l.href} style={linkStyle(l.href)}>{l.label}</Link>
+          <Link key={l.href} href={l.href} className="nav-link" data-active={pathname === l.href} style={linkStyle(l.href)}>{l.label}</Link>
         ))}
       </nav>
 
@@ -44,7 +44,7 @@ export function HeaderNav() {
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
         {open && (
-          <div style={{
+          <div className="rise-in" style={{
             position: 'absolute', right: 0, top: 'calc(100% + 10px)',
             background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 14,
             boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column',

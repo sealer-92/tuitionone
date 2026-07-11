@@ -18,12 +18,12 @@ function ModuleList({ courseId, modules, type }: { courseId: string; modules: Mo
     return <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Nothing here yet — check back soon.</p>
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {withContent.map((mod) => {
+    <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {withContent.map((mod, i) => {
         const count = mod.contentItems.filter((i) => i.type === type).length
         return (
-          <Link key={mod.id} href={`/dashboard/course/${courseId}/module/${mod.id}`} style={{ textDecoration: 'none' }}>
-            <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Link key={mod.id} href={`/dashboard/course/${courseId}/module/${mod.id}`} style={{ textDecoration: 'none', ['--stagger-i' as string]: i }}>
+            <div className="card-lift" style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
               <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(229,143,63,0.12)', color: 'var(--orange-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-ui)', fontWeight: 800, fontSize: 16, flexShrink: 0 }}>
                 {mod.order}
               </div>

@@ -39,6 +39,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing course or option' }, { status: 400 })
   }
 
+  // The purchase is attached to this email by the webhook, so it must be
+  // present and well-formed for the one-purchase-per-course check to hold.
+  if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
+    return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 })
+  }
+
   // Address is required for every purchase (printed booklets are posted).
   if (!line1 || !city || !county || !eircode || !isValidEircode(eircode)) {
     return NextResponse.json({ error: 'A valid delivery address with Eircode is required' }, { status: 400 })
@@ -47,6 +53,22 @@ export async function POST(req: NextRequest) {
   const course = await db.course.findUnique({ where: { id: courseId, status: 'ACTIVE' } })
   if (!course) {
     return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+  }
+
+  // Each account may buy a given course only once (buying other courses is fine).
+  const alreadyOwned = await db.purchase.findFirst({
+    where: {
+      courseId,
+      status: 'COMPLETED',
+      user: { email: { equals: parentEmail, mode: 'insensitive' } },
+    },
+    select: { id: true },
+  })
+  if (alreadyOwned) {
+    return NextResponse.json(
+      { error: 'This course has already been purchased with this email. Sign in to access it — or contact us if you need help.' },
+      { status: 409 },
+    )
   }
 
   // Authoritative price from the chosen option; never trust a client-supplied amount.
@@ -60,7 +82,9 @@ export async function POST(req: NextRequest) {
   const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
-    customer_email: parentEmail || undefined,
+    // Locks the email on the Stripe page so the webhook attaches the purchase
+    // to the same account we checked for prior ownership.
+    customer_email: parentEmail,
     line_items: [
       {
         price_data: {

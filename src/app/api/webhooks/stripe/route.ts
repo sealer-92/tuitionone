@@ -94,6 +94,14 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // Checkout blocks buying a course twice, but two sessions opened in
+    // parallel can both pay. Record the purchase regardless (the card was
+    // charged) and flag it in the audit log so an admin can refund.
+    const duplicate = await db.purchase.findFirst({
+      where: { userId: user.id, courseId, status: 'COMPLETED', stripeSessionId: { not: session.id } },
+      select: { id: true },
+    })
+
     // Update or create the purchase record
     await db.purchase.upsert({
       where: { stripeSessionId: session.id },
@@ -128,6 +136,12 @@ export async function POST(req: NextRequest) {
       courseId,
       amountCents: session.amount_total ?? 0,
     })
+    if (duplicate) {
+      await writeAuditLog(user.id, 'duplicate_purchase_detected', 'Purchase', session.id, ip, {
+        courseId,
+        existingPurchaseId: duplicate.id,
+      })
+    }
 
     await sendMagicLinkEmail(email, parentName)
   }
