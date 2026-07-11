@@ -18,7 +18,7 @@ export function Footer() {
             </div>
           </div>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(245,239,228,0.65)', marginTop: 20, maxWidth: 320, lineHeight: 1.55 }}>
-            Saturday grinds in Maths, Chemistry and Science for secondary-school students across the midlands.
+            Online video courses and study notes in Maths, Chemistry and more, for Leaving Cert and Junior Cycle students across Ireland.
           </p>
         </div>
 
@@ -34,9 +34,9 @@ export function Footer() {
         </div>
 
         <div>
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--orange)', marginBottom: 14 }}>Visit</div>
+          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--orange)', marginBottom: 14 }}>Learning</div>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(245,239,228,0.75)', margin: 0, lineHeight: 1.55 }}>
-            Vision 85<br />Clonminam Business Park<br />Portlaoise · R32 F5T6<br /><br />Saturdays 08:00–16:00
+            100% online — watch anytime, on any device.<br /><br />Printed booklets posted anywhere in Ireland.
           </p>
         </div>
 

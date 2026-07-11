@@ -1,10 +1,10 @@
-import { Clock, BookOpen, Monitor, Users } from 'lucide-react'
+import { PlayCircle, BookOpen, FileCheck, Repeat } from 'lucide-react'
 
 const included = [
-  { icon: <Clock size={18} />,    title: '1-hour weekly class',          body: 'Same time every Saturday, max. 10 students.' },
-  { icon: <BookOpen size={18} />, title: 'Custom revision workbook',     body: 'Written and printed in-house for each course.' },
-  { icon: <Monitor size={18} />,  title: 'Google Classroom resources',   body: 'Worked solutions and weekly extras between classes.' },
-  { icon: <Users size={18} />,    title: 'Direct teacher access',        body: 'Email and WhatsApp questions between lessons.' },
+  { icon: <PlayCircle size={18} />, title: 'Full video course',       body: 'Every topic broken into clear lessons you can watch anytime.' },
+  { icon: <BookOpen size={18} />,   title: 'Course booklet',          body: 'A matching booklet — digital, or printed and posted to you.' },
+  { icon: <FileCheck size={18} />,  title: 'Exam walkthroughs',       body: 'Worked solutions to past exam questions, explained step by step.' },
+  { icon: <Repeat size={18} />,     title: 'Learn at your own pace',  body: 'Pause, rewind and revisit lessons as often as you need.' },
 ]
 
 export function AboutSection() {
@@ -24,17 +24,17 @@ export function AboutSection() {
           <span style={{ color: 'var(--fg-3)' }}>____________</span>
         </div>
         <div style={{ position: 'absolute', right: '4%', top: '8%', fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink)', fontWeight: 600, opacity: 0.7 }}>
-          ↳ classroom placeholder
+          ↳ course preview
         </div>
       </div>
 
       <div>
         <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--orange)', marginBottom: 14 }}>What&apos;s included</div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 3.6vw, 38px)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', color: 'var(--ink)', margin: 0 }}>
-          A real teacher.<br />A small class.<br />A plan for the year.
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 3.6vw, 38px)', fontWeight: 600, lineHeight: 1.15, letterSpacing: '-0.02em', color: 'var(--ink)', margin: 0 }}>
+          A real teacher.<br />Every step on video.<br />A plan for the exam.
         </h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 17, lineHeight: 1.6, color: 'var(--fg-2)', marginTop: 20 }}>
-          We keep groups small so every student gets called on, every week — and we write our own workbooks so the homework matches the lesson.
+          Every topic is broken into clear video lessons with a booklet that matches — so you learn the method, watch it worked through, then practise it at your own pace.
         </p>
         <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 18 }}>
           {included.map((it, i) => (

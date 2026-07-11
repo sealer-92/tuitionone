@@ -57,7 +57,7 @@ export function CourseCard({ course, dark }: CourseCardProps) {
         <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 800, fontSize: 28, color: priceColor }}>{fromPrice != null ? `€${fromPrice}` : '—'}</div>
       </div>
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <Button variant="primary" size="sm" href={`/enrol?course=${course.id}`}>Reserve a place</Button>
+        <Button variant="primary" size="sm" href={`/enrol?course=${course.id}`}>Enrol now</Button>
       </div>
     </div>
   )

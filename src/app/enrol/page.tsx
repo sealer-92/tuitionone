@@ -4,8 +4,8 @@ import { EnrolForm }  from '@/components/EnrolForm'
 import { getActiveCourses } from '@/lib/catalog'
 
 export const metadata = {
-  title: 'Enrol — Tuition One Grinds',
-  description: 'Reserve a place on a Saturday grinds course. Choose videos, digital or printed booklets — pay securely online.',
+  title: 'Enrol — Tuition One',
+  description: 'Get instant access to an online course. Choose videos with a digital or printed booklet — pay securely online.',
 }
 
 export default async function EnrolPage() {
@@ -13,9 +13,9 @@ export default async function EnrolPage() {
   return (
     <Section
       narrow
-      eyebrow="Reserve a place"
-      title="Enrol your child"
-      subtitle="Three short steps. Choose the course and the option that suits you."
+      eyebrow="Get started"
+      title="Enrol online"
+      subtitle="Three short steps. Choose the course and the option that suits you, and get instant access."
     >
       <Suspense>
         <EnrolForm courses={courses} />

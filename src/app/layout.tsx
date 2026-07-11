@@ -1,33 +1,33 @@
 import type { Metadata } from 'next'
-import { Montserrat, Lora } from 'next/font/google'
+import { Fraunces, Inter } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 
-const montserrat = Montserrat({
+// Variable fonts: omit `weight` to load the full range; `axes` adds extra axes.
+const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-montserrat',
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  variable: '--font-fraunces',
   display: 'swap',
 })
 
-const lora = Lora({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-lora',
+  variable: '--font-inter',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'Tuition One Grinds — Saturday Grinds in Maths & Chemistry',
+  title: 'Tuition One — Online Exam Prep for Leaving Cert & Junior Cycle',
   description:
-    'Small class group grinds for Maths and Chemistry. 5th Year, 6th Year and Junior Cert students. Max 10 per class. Portlaoise, Ireland.',
+    'Online video courses and study notes for Leaving Cert and Junior Cycle Maths, Chemistry, Biology and Science. Learn at your own pace, from €150.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${lora.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
         <Header />
         <main>{children}</main>

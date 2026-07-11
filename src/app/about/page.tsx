@@ -4,8 +4,8 @@ import { Testimonial }   from '@/components/Testimonial'
 import { ContactBlock }  from '@/components/ContactBlock'
 
 export const metadata = {
-  title: 'About — Tuition One Grinds',
-  description: 'Small class grinds the way they should be — focused, friendly, and effective. Learn about our approach, what\'s included, and who we are.',
+  title: 'About — Tuition One',
+  description: 'Online exam preparation built by an experienced teacher and State exams corrector. Learn about the approach, what\'s included, and who we are.',
 }
 
 export default function AboutPage() {
@@ -13,7 +13,7 @@ export default function AboutPage() {
     <>
       <Section
         eyebrow="About Tuition One"
-        title="Grinds the way they should be — small, focused and friendly."
+        title="Exam preparation, built by someone who knows the exam from both sides."
       >
         <AboutSection />
       </Section>
@@ -22,7 +22,7 @@ export default function AboutPage() {
         <Testimonial />
       </Section>
 
-      <Section dark eyebrow="Get in touch" title="Come and see the classroom.">
+      <Section dark eyebrow="Get in touch" title="Have a question? We’re happy to help.">
         <ContactBlock dark />
       </Section>
     </>
