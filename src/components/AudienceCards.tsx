@@ -64,23 +64,34 @@ function CardArt({ kind }: { kind: string }) {
   )
 }
 
-function Card({ card }: { card: typeof CARDS[0] }) {
-  const [hover, setHover] = useState(false)
+function Card({ card, hover, dimmed, onEnter, onLeave }: {
+  card: typeof CARDS[0]
+  hover: boolean
+  dimmed: boolean
+  onEnter: () => void
+  onLeave: () => void
+}) {
   return (
     <Link
       href={card.href}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      onFocus={onEnter}
+      onBlur={onLeave}
       style={{
         display: 'flex', flexDirection: 'column',
-        background: 'linear-gradient(165deg, var(--chalkboard) 0%, var(--chalkboard-deep) 100%)',
+        background: hover
+          ? 'linear-gradient(165deg, var(--chalkboard-light) 0%, var(--chalkboard) 100%)'
+          : 'linear-gradient(165deg, var(--chalkboard) 0%, var(--chalkboard-deep) 100%)',
         borderRadius: 'var(--radius-xl)',
         padding: '32px 30px 28px',
         minHeight: 320,
         textDecoration: 'none',
-        border: hover ? '1px solid rgba(240,185,122,0.4)' : '1px solid rgba(245,239,228,0.08)',
-        boxShadow: hover ? '0 24px 48px -20px rgba(28,42,36,0.5)' : '0 8px 24px -14px rgba(28,42,36,0.35)',
-        transition: 'border-color 200ms var(--ease), box-shadow 200ms var(--ease)',
+        border: hover ? '1px solid rgba(240,185,122,0.55)' : '1px solid rgba(245,239,228,0.08)',
+        boxShadow: hover ? '0 28px 56px -18px rgba(0,0,0,0.5)' : '0 8px 24px -14px rgba(28,42,36,0.35)',
+        transform: hover ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
+        opacity: dimmed ? 0.55 : 1,
+        transition: 'transform 220ms var(--ease), border-color 220ms var(--ease), box-shadow 220ms var(--ease), opacity 220ms var(--ease), background 220ms var(--ease)',
       }}
     >
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--orange-soft)' }}>
@@ -104,9 +115,19 @@ function Card({ card }: { card: typeof CARDS[0] }) {
 }
 
 export function AudienceCards() {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-      {CARDS.map((c) => <Card key={c.tag} card={c} />)}
+      {CARDS.map((c, i) => (
+        <Card
+          key={c.tag}
+          card={c}
+          hover={hoveredIdx === i}
+          dimmed={hoveredIdx !== null && hoveredIdx !== i}
+          onEnter={() => setHoveredIdx(i)}
+          onLeave={() => setHoveredIdx(null)}
+        />
+      ))}
     </div>
   )
 }

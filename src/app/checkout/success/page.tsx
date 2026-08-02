@@ -1,10 +1,26 @@
-import { Check, Mail } from 'lucide-react'
+import { Check, Mail, Package } from 'lucide-react'
+import { db } from '@/lib/db'
+import { grantsVideo, grantsNotes, needsShipping } from '@/lib/options'
 
 export const metadata = {
   title: 'Payment confirmed — Tuition One',
 }
 
-export default function CheckoutSuccessPage() {
+export default async function CheckoutSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>
+}) {
+  const { session_id } = await searchParams
+  const purchase = session_id
+    ? await db.purchase.findUnique({ where: { stripeSessionId: session_id }, select: { option: true } })
+    : null
+
+  // "Booklet only" purchases (digital or printed) don't include video access.
+  const bookletOnly  = !!purchase && !grantsVideo(purchase.option)
+  const hasDigital   = !!purchase && grantsNotes(purchase.option)
+  const hasShipping  = !!purchase && needsShipping(purchase.option)
+
   return (
     <section style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--container-pad)' }}>
       <div style={{ width: '100%', maxWidth: 480, textAlign: 'center' }}>
@@ -30,6 +46,21 @@ export default function CheckoutSuccessPage() {
             </div>
           </div>
         </div>
+
+        {bookletOnly && (
+          <div style={{ background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(92,138,78,0.14)', color: 'var(--leaf-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Package size={20} />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 700, color: 'var(--ink)' }}>About your booklet</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-2)', marginTop: 2 }}>
+                {hasDigital && 'Your digital booklet is available online in your dashboard as soon as you sign in. '}
+                {hasShipping && "We'll be in touch to confirm postage of your printed booklet."}
+              </div>
+            </div>
+          </div>
+        )}
 
         <a href="/auth/signin" style={{ display: 'inline-block', background: 'var(--orange)', color: 'white', fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, padding: '13px 28px', borderRadius: 12, textDecoration: 'none' }}>
           Sign in to my account

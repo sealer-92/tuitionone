@@ -7,6 +7,9 @@ import {
   needsShipping,
   isValidEircode,
   normalizeEircode,
+  isValidEmail,
+  isValidIrishMobile,
+  normalizePhone,
   CoursePricing,
 } from '@/lib/options'
 
@@ -99,5 +102,39 @@ describe('eircode validation', () => {
 
   it('normalizes by stripping whitespace and upper-casing', () => {
     expect(normalizeEircode(' r93 a1b2 ')).toBe('R93A1B2')
+  })
+})
+
+describe('email validation', () => {
+  it('accepts well-formed emails', () => {
+    expect(isValidEmail('aoife@example.com')).toBe(true)
+    expect(isValidEmail('a.b+c@example.co.uk')).toBe(true)
+  })
+
+  it('rejects malformed emails', () => {
+    expect(isValidEmail('not-an-email')).toBe(false)
+    expect(isValidEmail('missing@domain')).toBe(false)
+    expect(isValidEmail('@nouser.com')).toBe(false)
+    expect(isValidEmail('')).toBe(false)
+  })
+})
+
+describe('Irish mobile validation', () => {
+  it('accepts valid 10-digit numbers starting with 08, with or without spacing', () => {
+    expect(isValidIrishMobile('0871234567')).toBe(true)
+    expect(isValidIrishMobile('087 123 4567')).toBe(true)
+    expect(isValidIrishMobile('086-123-4567')).toBe(true)
+    expect(isValidIrishMobile('0851234567')).toBe(true)
+  })
+
+  it('rejects wrong lengths, wrong prefixes and empty input', () => {
+    expect(isValidIrishMobile('087123456')).toBe(false)
+    expect(isValidIrishMobile('08712345678')).toBe(false)
+    expect(isValidIrishMobile('0912345678')).toBe(false)
+    expect(isValidIrishMobile('')).toBe(false)
+  })
+
+  it('normalizes by stripping spaces and dashes', () => {
+    expect(normalizePhone(' 087-123 4567 ')).toBe('0871234567')
   })
 })

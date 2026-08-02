@@ -22,19 +22,30 @@ export function CourseList({ courses, dark }: CourseListProps) {
   )
 
   function Chip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+    const [hover, setHover] = useState(false)
+    const [press, setPress] = useState(false)
     return (
-      <button onClick={onClick} style={{
-        fontFamily: 'var(--font-ui)',
-        fontSize: 13,
-        fontWeight: 600,
-        padding: '8px 16px',
-        borderRadius: 999,
-        border: active ? '1.5px solid var(--orange)' : dark ? '1.5px solid rgba(255,255,255,0.15)' : '1.5px solid var(--border-strong)',
-        background: active ? (dark ? 'rgba(229,143,63,0.18)' : 'rgba(229,143,63,0.12)') : 'transparent',
-        color: active ? (dark ? 'var(--orange-soft)' : 'var(--orange-deep)') : (dark ? 'var(--chalk)' : 'var(--ink)'),
-        cursor: 'pointer',
-        transition: 'all 120ms ease',
-      }}>{label}</button>
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => { setHover(false); setPress(false) }}
+        onMouseDown={() => setPress(true)}
+        onMouseUp={() => setPress(false)}
+        style={{
+          fontFamily: 'var(--font-ui)',
+          fontSize: 13,
+          fontWeight: 600,
+          padding: '8px 16px',
+          borderRadius: 999,
+          border: active || hover ? '1.5px solid var(--orange)' : dark ? '1.5px solid rgba(255,255,255,0.15)' : '1.5px solid var(--border-strong)',
+          background: active ? (dark ? 'rgba(229,143,63,0.18)' : 'rgba(229,143,63,0.12)') : hover ? (dark ? 'rgba(229,143,63,0.1)' : 'rgba(229,143,63,0.06)') : 'transparent',
+          color: active || hover ? (dark ? 'var(--orange-soft)' : 'var(--orange-deep)') : (dark ? 'var(--chalk)' : 'var(--ink)'),
+          cursor: 'pointer',
+          transform: press ? 'scale(0.95)' : hover ? 'translateY(-2px)' : 'none',
+          boxShadow: hover && !active ? 'var(--shadow-sm)' : 'none',
+          transition: 'all 160ms var(--ease)',
+        }}
+      >{label}</button>
     )
   }
 

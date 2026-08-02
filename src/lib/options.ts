@@ -70,3 +70,16 @@ export function normalizeEircode(raw: string): string {
 export function isValidEircode(raw: string): boolean {
   return /^[A-Z0-9]{7}$/.test(normalizeEircode(raw))
 }
+
+export function isValidEmail(raw: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)
+}
+
+export function normalizePhone(raw: string): string {
+  return raw.replace(/[\s-]/g, '')
+}
+
+// Irish mobile numbers: 08 followed by 8 more digits (e.g. 085, 086, 087, 089), 10 digits total.
+export function isValidIrishMobile(raw: string): boolean {
+  return /^08\d{8}$/.test(normalizePhone(raw))
+}

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Check, ArrowRight, Lock } from 'lucide-react'
 import { Course } from '@/lib/courses'
-import { optionsForCourse, needsShipping, isValidEircode, IRISH_COUNTIES } from '@/lib/options'
+import { optionsForCourse, needsShipping, isValidEircode, isValidEmail, isValidIrishMobile, IRISH_COUNTIES } from '@/lib/options'
 import { PurchaseOption } from '@prisma/client'
 import { Button } from './Button'
 
@@ -27,10 +27,12 @@ function StepIndicator({ step, n, label }: { step: number; n: number; label: str
 }
 
 interface FormData {
-  parentName:  string
-  parentEmail: string
-  parentPhone: string
-  studentName: string
+  parentFirstName:  string
+  parentLastName:   string
+  parentEmail:      string
+  parentPhone:      string
+  studentFirstName: string
+  studentLastName:  string
   line1:       string
   line2:       string
   city:        string
@@ -38,7 +40,6 @@ interface FormData {
   eircode:     string
   courseId:    string
   option:      PurchaseOption | ''
-  terms:       boolean
 }
 
 export function EnrolForm({ courses }: { courses: Course[] }) {
@@ -47,10 +48,12 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
 
   const [step, setStep] = useState(1)
   const [data, setData] = useState<FormData>({
-    parentName:  '',
-    parentEmail: '',
-    parentPhone: '',
-    studentName: '',
+    parentFirstName:  '',
+    parentLastName:   '',
+    parentEmail:      '',
+    parentPhone:      '',
+    studentFirstName: '',
+    studentLastName:  '',
     line1:       '',
     line2:       '',
     city:        '',
@@ -58,7 +61,6 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
     eircode:     '',
     courseId:    courses.some((c) => c.id === initialCourseId) ? initialCourseId : '',
     option:      '',
-    terms:       false,
   })
   const [loading, setLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState('')
@@ -70,8 +72,12 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
   const selectedOption = options.find((o) => o.option === data.option)
 
   const eircodeValid = isValidEircode(data.eircode)
+  const emailValid   = isValidEmail(data.parentEmail)
+  const phoneValid   = isValidIrishMobile(data.parentPhone)
   const detailsValid =
-    data.parentName && data.studentName && data.parentEmail && data.parentPhone &&
+    data.parentFirstName && data.parentLastName &&
+    data.studentFirstName && data.studentLastName &&
+    emailValid && phoneValid &&
     data.line1 && data.city && data.county && eircodeValid
 
   async function handleCheckout() {
@@ -84,10 +90,10 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
         body: JSON.stringify({
           courseId:    data.courseId,
           option:      data.option,
-          parentName:  data.parentName,
+          parentName:  `${data.parentFirstName} ${data.parentLastName}`.trim(),
           parentEmail: data.parentEmail,
           parentPhone: data.parentPhone,
-          studentName: data.studentName,
+          studentName: `${data.studentFirstName} ${data.studentLastName}`.trim(),
           line1:       data.line1,
           line2:       data.line2,
           city:        data.city,
@@ -117,6 +123,9 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
     fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600,
     color: 'var(--fg-2)', letterSpacing: '0.02em', marginBottom: 6, display: 'block',
   }
+  const errorStyle: React.CSSProperties = {
+    fontFamily: 'var(--font-body)', fontSize: 12, color: '#B5483C', marginTop: 4, display: 'block',
+  }
 
   return (
     <div style={{ background: 'var(--paper)', borderRadius: 20, padding: 'clamp(20px, 4vw, 36px)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
@@ -137,20 +146,41 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
           </p>
           <div className="enrol-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <label>
-              <span style={labelStyle}>Parent&apos;s name</span>
-              <input style={fieldStyle} value={data.parentName} onChange={(e) => upd('parentName', e.target.value)} />
+              <span style={labelStyle}>Parent&apos;s first name</span>
+              <input style={fieldStyle} value={data.parentFirstName} onChange={(e) => upd('parentFirstName', e.target.value)} />
             </label>
             <label>
-              <span style={labelStyle}>Student&apos;s name</span>
-              <input style={fieldStyle} value={data.studentName} onChange={(e) => upd('studentName', e.target.value)} />
+              <span style={labelStyle}>Parent&apos;s last name</span>
+              <input style={fieldStyle} value={data.parentLastName} onChange={(e) => upd('parentLastName', e.target.value)} />
+            </label>
+            <label>
+              <span style={labelStyle}>Student&apos;s first name</span>
+              <input style={fieldStyle} value={data.studentFirstName} onChange={(e) => upd('studentFirstName', e.target.value)} />
+            </label>
+            <label>
+              <span style={labelStyle}>Student&apos;s last name</span>
+              <input style={fieldStyle} value={data.studentLastName} onChange={(e) => upd('studentLastName', e.target.value)} />
             </label>
             <label>
               <span style={labelStyle}>Email</span>
-              <input type="email" style={fieldStyle} value={data.parentEmail} onChange={(e) => upd('parentEmail', e.target.value)} placeholder="aoife@example.com" />
+              <input
+                type="email"
+                style={{ ...fieldStyle, borderColor: data.parentEmail && !emailValid ? '#B5483C' : 'var(--border-strong)' }}
+                value={data.parentEmail}
+                onChange={(e) => upd('parentEmail', e.target.value)}
+                placeholder="aoife@example.com"
+              />
+              {data.parentEmail && !emailValid && <span style={errorStyle}>Enter a valid email address.</span>}
             </label>
             <label>
               <span style={labelStyle}>Phone</span>
-              <input style={fieldStyle} value={data.parentPhone} onChange={(e) => upd('parentPhone', e.target.value)} placeholder="087 ..." />
+              <input
+                style={{ ...fieldStyle, borderColor: data.parentPhone && !phoneValid ? '#B5483C' : 'var(--border-strong)' }}
+                value={data.parentPhone}
+                onChange={(e) => upd('parentPhone', e.target.value)}
+                placeholder="087 123 4567"
+              />
+              {data.parentPhone && !phoneValid && <span style={errorStyle}>Enter a valid Irish mobile number (e.g. 087 123 4567).</span>}
             </label>
             <label style={{ gridColumn: '1 / -1' }}>
               <span style={labelStyle}>Address line 1</span>
@@ -180,11 +210,7 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
                 placeholder="e.g. R93 A1B2"
                 maxLength={8}
               />
-              {data.eircode && !eircodeValid && (
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#B5483C', marginTop: 4, display: 'block' }}>
-                  Enter a valid 7-character Eircode.
-                </span>
-              )}
+              {data.eircode && !eircodeValid && <span style={errorStyle}>Enter a valid 7-character Eircode.</span>}
             </label>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
@@ -274,7 +300,7 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
             <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--orange-deep)' }}>Booking summary</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px 24px', marginTop: 14, fontFamily: 'var(--font-body)', fontSize: 15 }}>
               <div style={{ color: 'var(--fg-3)' }}>Student</div>
-              <div style={{ color: 'var(--ink)', fontWeight: 600 }}>{data.studentName || '—'}</div>
+              <div style={{ color: 'var(--ink)', fontWeight: 600 }}>{`${data.studentFirstName} ${data.studentLastName}`.trim() || '—'}</div>
               <div style={{ color: 'var(--fg-3)' }}>Course</div>
               <div style={{ color: 'var(--ink)', fontWeight: 600 }}>{selectedCourse ? `${selectedCourse.title} · ${selectedCourse.year}` : '—'}</div>
               <div style={{ color: 'var(--fg-3)' }}>Option</div>
@@ -289,10 +315,6 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
               <div style={{ fontFamily: 'var(--font-ui)', color: 'var(--orange-deep)', fontWeight: 800, fontSize: 18 }}>{selectedOption ? `€${selectedOption.priceCents / 100}` : '—'}</div>
             </div>
           </div>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-1)', cursor: 'pointer' }}>
-            <input type="checkbox" checked={data.terms} onChange={(e) => upd('terms', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--orange)', marginTop: 2, cursor: 'pointer' }} />
-            <span>I&apos;ve read the terms and agree to this purchase.</span>
-          </label>
           {checkoutError && (
             <div style={{ background: 'rgba(181,72,60,0.08)', border: '1px solid rgba(181,72,60,0.25)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: '#B5483C' }}>
               {checkoutError}
@@ -300,7 +322,7 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
             <Button variant="ghost" onClick={() => setStep(2)} disabled={loading}>← Back</Button>
-            <Button variant="primary" size="lg" onClick={handleCheckout} icon={<Lock size={16} />} disabled={!data.terms || loading}>
+            <Button variant="primary" size="lg" onClick={handleCheckout} icon={<Lock size={16} />} disabled={loading}>
               {loading ? 'Redirecting…' : `Pay €${selectedOption ? selectedOption.priceCents / 100 : ''}`}
             </Button>
           </div>

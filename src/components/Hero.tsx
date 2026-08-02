@@ -15,6 +15,7 @@ const DARK        = '#1F362D'
 const STATS = [
   { value: '10+', label: 'years teaching experience' },
   { value: '€150', label: 'from, per course' },
+  { value: '€30', label: 'from, per booklet' },
   { value: 'Anytime', label: 'learn at your own pace' },
 ]
 
@@ -66,7 +67,7 @@ export function Hero() {
 
         {/* Illustration */}
         <div style={{ position: 'relative', width: '100%', maxWidth: 520, margin: '0 auto' }}>
-          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} role="img" aria-label="Illustration of a calculator, notebook, ruler, pencil and chemistry flask">
+          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} role="img" aria-label="Illustration of a calculator, notebook, ruler, pencil, chemistry flask and a DNA double helix">
             <g transform="rotate(-7 380 110)">
               <rect x="280" y="20" width="200" height="240" rx="6" fill={PAPER} />
               <rect x="280" y="20" width="200" height="22" fill={ORANGE} />
@@ -109,7 +110,7 @@ export function Hero() {
               <text x="208" y="142" textAnchor="middle" fontFamily="var(--font-ui)" fontWeight="800" fontSize="10" letterSpacing="2" fill={PAPER} opacity="0.85">TUITION ONE</text>
               <rect x="124" y="150" width="168" height="54" rx="8" fill={DARK} />
               <rect x="124" y="150" width="168" height="14" rx="8" fill="#000" opacity="0.25" />
-              <text x="282" y="190" textAnchor="end" fontFamily="ui-monospace, SF Mono, Menlo, monospace" fontWeight="600" fontSize="22" fill={LEAF} opacity="0.95">450.00</text>
+              <text x="282" y="190" textAnchor="end" fontFamily="ui-monospace, SF Mono, Menlo, monospace" fontWeight="600" fontSize="22" fill={LEAF} opacity="0.95">3.14</text>
               {Array.from({ length: 4 }).map((_, r) =>
                 Array.from({ length: 4 }).map((_, c) => {
                   const x = 124 + c * 42
@@ -138,6 +139,16 @@ export function Hero() {
               <circle cx="86" cy="128" r="2.5" fill={PAPER} opacity="0.7" />
               <line x1="42" y1="92" x2="50" y2="92" stroke={INK} strokeWidth="1.2" opacity="0.5" />
               <line x1="42" y1="76" x2="48" y2="76" stroke={INK} strokeWidth="1.2" opacity="0.5" />
+            </g>
+
+            {/* Biology: DNA double helix */}
+            <g transform="rotate(9 415 320)">
+              <rect x="374" y="278" width="82" height="84" rx="14" fill={PAPER} stroke={INK} strokeWidth="2" opacity="0.97" />
+              <path d="M397 292 C 415 300 415 312 433 320 C 415 328 415 340 397 348" fill="none" stroke={LEAF} strokeWidth="4" strokeLinecap="round" />
+              <path d="M433 292 C 415 300 415 312 397 320 C 415 328 415 340 433 348" fill="none" stroke={ORANGE_DEEP} strokeWidth="4" strokeLinecap="round" />
+              <line x1="397" y1="292" x2="433" y2="292" stroke={INK} strokeWidth="2" opacity="0.4" />
+              <line x1="397" y1="320" x2="433" y2="320" stroke={INK} strokeWidth="2" opacity="0.4" />
+              <line x1="397" y1="348" x2="433" y2="348" stroke={INK} strokeWidth="2" opacity="0.4" />
             </g>
           </svg>
         </div>

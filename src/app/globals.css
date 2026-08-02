@@ -178,8 +178,8 @@ a:focus-visible {
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  max-width: 460px;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 600px;
 }
 
 .hero-stat {
