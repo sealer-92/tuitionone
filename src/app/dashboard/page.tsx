@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import { ModulesGrid } from '@/components/ModulesGrid'
 import { RaiseIssueForm } from '@/components/RaiseIssueForm'
+import { DashboardGreeting } from '@/components/DashboardGreeting'
 
 export const metadata = { title: 'My Modules — Tuition One' }
 
@@ -15,6 +16,7 @@ export default async function DashboardPage() {
     select: {
       id: true,
       option: true,
+      studentName: true,
       course: {
         select: {
           id: true, slug: true, title: true, subject: true, year: true, weeks: true, schedule: true,
@@ -25,6 +27,8 @@ export default async function DashboardPage() {
     orderBy: { createdAt: 'desc' },
   })
 
+  const firstName = (purchases[0]?.studentName ?? session.user.name ?? '').trim().split(/\s+/)[0] || null
+
   return (
     <section style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(40px, 6vw, 80px) var(--container-pad)' }}>
       <div className="rise-in" style={{ marginBottom: 32 }}>
@@ -34,6 +38,9 @@ export default async function DashboardPage() {
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--ink)', margin: 0 }}>
           My Modules
         </h1>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'var(--fg-2)', marginTop: 8 }}>
+          <DashboardGreeting name={firstName} />
+        </p>
       </div>
 
       {purchases.length === 0 ? (
