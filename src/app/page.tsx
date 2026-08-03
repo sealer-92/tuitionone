@@ -6,7 +6,6 @@ import { CourseList }    from '@/components/CourseList'
 import { Testimonial }   from '@/components/Testimonial'
 import { CtaBand }       from '@/components/CtaBand'
 import { ContactBlock }  from '@/components/ContactBlock'
-import { Button }        from '@/components/Button'
 import { Sparkles, PlayCircle, Quote, MessageCircle } from 'lucide-react'
 import { getActiveCourses } from '@/lib/catalog'
 
@@ -42,10 +41,7 @@ export default async function HomePage() {
         title="Full courses and study notes"
         subtitle="Video courses in Leaving Cert Maths (Higher & Ordinary), Leaving Cert Chemistry and Junior Cycle Maths — plus study notes for Leaving Cert Biology and Junior Cycle Science. From €150 with a digital or printed booklet."
       >
-        <CourseList courses={courses.slice(0, 4)} />
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
-          <Button variant="secondary" size="lg" href="/courses">See all courses →</Button>
-        </div>
+        <CourseList courses={courses} />
       </Section>
 
       <Section

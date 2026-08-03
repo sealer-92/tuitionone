@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 import { checkoutRateLimit } from '@/lib/ratelimit'
-import { optionsForCourse, priceForOption, needsShipping, isValidEircode, normalizeEircode } from '@/lib/options'
+import { optionsForCourse, priceForOption, needsShipping, isValidEircode, normalizeEircode, isValidEmail, isValidIrishMobile } from '@/lib/options'
 import { PurchaseOption } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
@@ -41,8 +41,12 @@ export async function POST(req: NextRequest) {
 
   // The purchase is attached to this email by the webhook, so it must be
   // present and well-formed for the one-purchase-per-course check to hold.
-  if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
+  if (!parentEmail || !isValidEmail(parentEmail)) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 })
+  }
+
+  if (!parentPhone || !isValidIrishMobile(parentPhone)) {
+    return NextResponse.json({ error: 'A valid Irish mobile number is required' }, { status: 400 })
   }
 
   // Address is required for every purchase (printed booklets are posted).

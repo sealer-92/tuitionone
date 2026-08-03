@@ -83,7 +83,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
         {course.title}
       </h1>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--fg-2)', margin: '0 0 36px' }}>
-        {course.year} · {course.schedule} · {course.weeks}-week course
+        {course.year} · {course.schedule}
       </p>
 
       {!canVideo && !canNotes ? (
