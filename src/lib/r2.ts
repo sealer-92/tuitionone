@@ -23,6 +23,12 @@ export async function getUploadSignedUrl(r2Key: string, contentType: string): Pr
   return getSignedUrl(r2, command, { expiresIn: 3600 })
 }
 
+// Thumbnails are static, low-sensitivity images, so a longer-lived link is fine.
+export async function getThumbnailSignedUrl(r2Key: string): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: BUCKET, Key: r2Key })
+  return getSignedUrl(r2, command, { expiresIn: 86400 })
+}
+
 export async function deleteContentObject(r2Key: string): Promise<void> {
   await r2.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: r2Key }))
 }

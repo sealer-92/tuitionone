@@ -4,37 +4,52 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, BookOpen, Video, Package } from 'lucide-react'
 import { grantsNotes, grantsVideo } from '@/lib/options'
+import { getThumbnailSignedUrl } from '@/lib/r2'
+import { SUBJECT_BANNERS, SUBJECT_BANNER_FALLBACK, SUBJECT_BANNER_PATTERN } from '@/lib/subjectBanner'
 
 type ModuleWithItems = {
   id: string
   order: number
   title: string
+  thumbnailUrl: string | null
   contentItems: { type: string }[]
 }
 
-function ModuleList({ courseId, modules, type }: { courseId: string; modules: ModuleWithItems[]; type: 'VIDEO' | 'NOTES' }) {
+function ModuleList({ courseId, modules, type, subject }: { courseId: string; modules: ModuleWithItems[]; type: 'VIDEO' | 'NOTES'; subject: string }) {
   const withContent = modules.filter((m) => m.contentItems.some((i) => i.type === type))
   if (withContent.length === 0) {
     return <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Nothing here yet — check back soon.</p>
   }
   return (
-    <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 18 }}>
       {withContent.map((mod, i) => {
         const count = mod.contentItems.filter((i) => i.type === type).length
         return (
-          <Link key={mod.id} href={`/dashboard/course/${courseId}/module/${mod.id}`} style={{ textDecoration: 'none', ['--stagger-i' as string]: i }}>
-            <div className="card-lift" style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(229,143,63,0.12)', color: 'var(--orange-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-ui)', fontWeight: 800, fontSize: 16, flexShrink: 0 }}>
-                {mod.order}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: 'var(--font-ui)', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{mod.title}</div>
-                <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-                  {type === 'VIDEO' ? <Video size={12} /> : <BookOpen size={12} />}
-                  {count} {type === 'VIDEO' ? (count === 1 ? 'video' : 'videos') : (count === 1 ? 'booklet' : 'booklets')}
+          <Link
+            key={mod.id}
+            href={`/dashboard/course/${courseId}/module/${mod.id}`}
+            className="module-tile card-lift"
+            style={{ ['--stagger-i' as string]: i }}
+          >
+            <div className="module-tile-thumb">
+              {mod.thumbnailUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- presigned R2 URL, not a static/optimizable asset
+                <img src={mod.thumbnailUrl} alt="" loading="lazy" />
+              ) : (
+                <div style={{ background: `${SUBJECT_BANNER_PATTERN}, ${SUBJECT_BANNERS[subject] ?? SUBJECT_BANNER_FALLBACK}` }} aria-hidden="true">
+                  <span className="module-tile-number">{mod.order}</span>
                 </div>
+              )}
+              <span className="module-tile-count">
+                {type === 'VIDEO' ? <Video size={12} /> : <BookOpen size={12} />}
+                {count}
+              </span>
+            </div>
+            <div className="module-tile-body">
+              <div className="module-tile-title">{mod.title}</div>
+              <div className="module-tile-meta">
+                {type === 'VIDEO' ? (count === 1 ? '1 video' : `${count} videos`) : (count === 1 ? '1 booklet' : `${count} booklets`)}
               </div>
-              <ChevronRight size={18} style={{ color: 'var(--fg-3)', flexShrink: 0 }} />
             </div>
           </Link>
         )
@@ -68,6 +83,16 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
     },
   })
   if (!course) notFound()
+
+  const modules: ModuleWithItems[] = await Promise.all(
+    course.modules.map(async (m) => ({
+      id: m.id,
+      order: m.order,
+      title: m.title,
+      thumbnailUrl: m.thumbnailKey ? await getThumbnailSignedUrl(m.thumbnailKey) : null,
+      contentItems: m.contentItems,
+    })),
+  )
 
   return (
     <section style={{ maxWidth: 900, margin: '0 auto', padding: 'clamp(40px, 6vw, 80px) var(--container-pad)' }}>
@@ -105,7 +130,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <BookOpen size={20} /> Booklets
               </h2>
-              <ModuleList courseId={course.id} modules={course.modules} type="NOTES" />
+              <ModuleList courseId={course.id} modules={modules} type="NOTES" subject={course.subject} />
             </div>
           )}
           {canVideo && (
@@ -113,7 +138,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Video size={20} /> Videos
               </h2>
-              <ModuleList courseId={course.id} modules={course.modules} type="VIDEO" />
+              <ModuleList courseId={course.id} modules={modules} type="VIDEO" subject={course.subject} />
             </div>
           )}
         </div>

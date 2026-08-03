@@ -104,12 +104,13 @@ model Course {
 }
 
 model Module {
-  id          String   @id @default(cuid())
-  courseId    String
-  order       Int
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
+  id           String   @id @default(cuid())
+  courseId     String
+  order        Int
+  title        String
+  description  String?
+  thumbnailKey String?
+  createdAt    DateTime @default(now())
 
   course       Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
   contentItems ContentItem[]

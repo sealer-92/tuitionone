@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface ContentItem { id: string; type: string; title: string; durationSeconds: number | null }
-interface ModuleData { id: string; order: number; title: string; contentItems: ContentItem[] }
+interface ModuleData { id: string; order: number; title: string; thumbnailKey: string | null; contentItems: ContentItem[] }
 
 const field: React.CSSProperties = {
   fontFamily: 'var(--font-body)', fontSize: 14, padding: '9px 11px', background: 'white',
@@ -67,6 +67,58 @@ function UploadContent({ moduleId }: { moduleId: string }) {
   )
 }
 
+function UploadThumbnail({ moduleId, hasThumbnail }: { moduleId: string; hasThumbnail: boolean }) {
+  const router = useRouter()
+  const [busy, setBusy] = useState('')
+  const [error, setError] = useState('')
+
+  async function upload(file: File) {
+    setError('')
+    try {
+      setBusy('Requesting upload URL…')
+      const urlRes = await fetch('/api/admin/upload-url', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ moduleId, type: 'THUMBNAIL', fileName: file.name, contentType: file.type || 'application/octet-stream' }),
+      })
+      const { uploadUrl, r2Key, error: e1 } = await urlRes.json()
+      if (!urlRes.ok) throw new Error(e1 ?? 'Failed to get upload URL')
+
+      setBusy('Uploading…')
+      const put = await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type || 'application/octet-stream' }, body: file })
+      if (!put.ok) throw new Error(`R2 upload failed (${put.status})`)
+
+      setBusy('Saving…')
+      const save = await fetch(`/api/admin/modules/${moduleId}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ thumbnailKey: r2Key }),
+      })
+      const { error: e2 } = await save.json()
+      if (!save.ok) throw new Error(e2 ?? 'Failed to save thumbnail')
+
+      setBusy(''); router.refresh()
+    } catch (err) {
+      setBusy(''); setError(err instanceof Error ? err.message : 'Upload failed')
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+      <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--fg-2)' }}>
+        {hasThumbnail ? 'Thumbnail set ✓' : 'No thumbnail'}
+      </span>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = '' }}
+        style={{ fontFamily: 'var(--font-ui)', fontSize: 12 }}
+        disabled={!!busy}
+      />
+      {busy && <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--fg-3)' }}>{busy}</span>}
+      {error && <span style={{ color: 'var(--danger)', fontFamily: 'var(--font-body)', fontSize: 13 }}>{error}</span>}
+    </div>
+  )
+}
+
 export function AdminModuleManager({ courseId, modules }: { courseId: string; modules: ModuleData[] }) {
   const router = useRouter()
   const [newTitle, setNewTitle] = useState('')
@@ -118,6 +170,9 @@ export function AdminModuleManager({ courseId, modules }: { courseId: string; mo
                   </button>
                 </span>
               ))}
+            </div>
+            <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--border)' }}>
+              <UploadThumbnail moduleId={m.id} hasThumbnail={!!m.thumbnailKey} />
             </div>
             <UploadContent moduleId={m.id} />
           </div>
