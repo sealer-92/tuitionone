@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { BookOpen, Video, Package } from 'lucide-react'
 import { PurchaseOption } from '@prisma/client'
 import { grantsNotes, grantsVideo, needsShipping } from '@/lib/options'
+import { SUBJECT_BANNERS, SUBJECT_BANNER_FALLBACK, SUBJECT_BANNER_PATTERN } from '@/lib/subjectBanner'
 
 export interface ModulePurchase {
   id: string
@@ -28,19 +29,6 @@ const OPTION_LABEL: Record<PurchaseOption, string> = {
   PHYSICAL_BOOKLET: 'Printed booklet',
 }
 
-// Decorative banner per subject — pure CSS, so cards render with zero image requests.
-const BANNERS: Record<string, string> = {
-  Maths:     'linear-gradient(135deg, #2C4B3F 0%, #3A5E50 55%, #5C8A4E 100%)',
-  Chemistry: 'linear-gradient(135deg, #274B63 0%, #486C8A 60%, #7FA3BF 100%)',
-  Biology:   'linear-gradient(135deg, #3F6A35 0%, #5C8A4E 60%, #93B884 100%)',
-  Science:   'linear-gradient(135deg, #8A4B22 0%, #C97529 60%, #E58F3F 100%)',
-}
-const BANNER_FALLBACK = 'linear-gradient(135deg, #1F362D 0%, #2C4B3F 60%, #C2A98A 100%)'
-
-// Soft geometric texture layered over the gradient.
-const BANNER_PATTERN =
-  'repeating-linear-gradient(115deg, rgba(255,255,255,0.055) 0 2px, transparent 2px 26px), radial-gradient(ellipse at 80% 10%, rgba(255,255,255,0.14), transparent 55%)'
-
 function ModuleCard({ purchase, index }: { purchase: ModulePurchase; index: number }) {
   const { course, option } = purchase
   const canVideo = grantsVideo(option)
@@ -56,7 +44,7 @@ function ModuleCard({ purchase, index }: { purchase: ModulePurchase; index: numb
       aria-label={`${course.title} — open course`}
     >
       <div className="module-card-banner">
-        <div style={{ background: `${BANNER_PATTERN}, ${BANNERS[course.subject] ?? BANNER_FALLBACK}` }} aria-hidden="true">
+        <div style={{ background: `${SUBJECT_BANNER_PATTERN}, ${SUBJECT_BANNERS[course.subject] ?? SUBJECT_BANNER_FALLBACK}` }} aria-hidden="true">
           <span style={{
             position: 'absolute', left: 18, bottom: 14,
             fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 26, letterSpacing: '0.02em',
