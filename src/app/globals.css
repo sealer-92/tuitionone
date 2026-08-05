@@ -413,14 +413,13 @@ a:focus-visible {
 }
 
 .module-tile-thumb {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 21 / 9;
   position: relative;
   overflow: hidden;
   background: var(--cream);
 }
 
-.module-tile-thumb img,
-.module-tile-thumb > div {
+.module-tile-thumb img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -429,37 +428,7 @@ a:focus-visible {
   transition: transform var(--dur-slow) var(--ease-out);
 }
 
-.module-tile:hover .module-tile-thumb img,
-.module-tile:hover .module-tile-thumb > div { transform: scale(1.05); }
-
-.module-tile-number {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 40px;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.module-tile-count {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border-radius: 999px;
-  background: rgba(27, 42, 36, 0.65);
-  backdrop-filter: blur(4px);
-  color: white;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 600;
-}
+.module-tile:hover .module-tile-thumb img { transform: scale(1.05); }
 
 .module-tile-body {
   padding: 14px 16px 16px;

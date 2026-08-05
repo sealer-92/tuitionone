@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ChevronRight, BookOpen, Video, Package } from 'lucide-react'
 import { grantsNotes, grantsVideo } from '@/lib/options'
 import { getThumbnailSignedUrl } from '@/lib/r2'
-import { SUBJECT_BANNERS, SUBJECT_BANNER_FALLBACK, SUBJECT_BANNER_PATTERN } from '@/lib/subjectBanner'
+import { moduleFallbackPhotoUrl } from '@/lib/modulePhoto'
 
 type ModuleWithItems = {
   id: string
@@ -15,15 +15,16 @@ type ModuleWithItems = {
   contentItems: { type: string }[]
 }
 
-function ModuleList({ courseId, modules, type, subject }: { courseId: string; modules: ModuleWithItems[]; type: 'VIDEO' | 'NOTES'; subject: string }) {
+function ModuleList({ courseId, modules, type }: { courseId: string; modules: ModuleWithItems[]; type: 'VIDEO' | 'NOTES' }) {
   const withContent = modules.filter((m) => m.contentItems.some((i) => i.type === type))
   if (withContent.length === 0) {
     return <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Nothing here yet — check back soon.</p>
   }
   return (
-    <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 18 }}>
+    <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
       {withContent.map((mod, i) => {
         const count = mod.contentItems.filter((i) => i.type === type).length
+        const countLabel = type === 'VIDEO' ? (count === 1 ? '1 video' : `${count} videos`) : (count === 1 ? '1 booklet' : `${count} booklets`)
         return (
           <Link
             key={mod.id}
@@ -32,24 +33,12 @@ function ModuleList({ courseId, modules, type, subject }: { courseId: string; mo
             style={{ ['--stagger-i' as string]: i }}
           >
             <div className="module-tile-thumb">
-              {mod.thumbnailUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element -- presigned R2 URL, not a static/optimizable asset
-                <img src={mod.thumbnailUrl} alt="" loading="lazy" />
-              ) : (
-                <div style={{ background: `${SUBJECT_BANNER_PATTERN}, ${SUBJECT_BANNERS[subject] ?? SUBJECT_BANNER_FALLBACK}` }} aria-hidden="true">
-                  <span className="module-tile-number">{mod.order}</span>
-                </div>
-              )}
-              <span className="module-tile-count">
-                {type === 'VIDEO' ? <Video size={12} /> : <BookOpen size={12} />}
-                {count}
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element -- presigned R2 URL / third-party photo, not a static/optimizable asset */}
+              <img src={mod.thumbnailUrl ?? moduleFallbackPhotoUrl(mod.id)} alt="" loading="lazy" />
             </div>
             <div className="module-tile-body">
               <div className="module-tile-title">{mod.title}</div>
-              <div className="module-tile-meta">
-                {type === 'VIDEO' ? (count === 1 ? '1 video' : `${count} videos`) : (count === 1 ? '1 booklet' : `${count} booklets`)}
-              </div>
+              <div className="module-tile-meta">Module {mod.order} · {countLabel}</div>
             </div>
           </Link>
         )
@@ -130,7 +119,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <BookOpen size={20} /> Booklets
               </h2>
-              <ModuleList courseId={course.id} modules={modules} type="NOTES" subject={course.subject} />
+              <ModuleList courseId={course.id} modules={modules} type="NOTES" />
             </div>
           )}
           {canVideo && (
@@ -138,7 +127,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Video size={20} /> Videos
               </h2>
-              <ModuleList courseId={course.id} modules={modules} type="VIDEO" subject={course.subject} />
+              <ModuleList courseId={course.id} modules={modules} type="VIDEO" />
             </div>
           )}
         </div>
