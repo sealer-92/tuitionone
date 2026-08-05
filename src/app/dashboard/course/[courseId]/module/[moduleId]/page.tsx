@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
-import { VideoPlayer } from '@/components/VideoPlayer'
+import { VideoList } from '@/components/VideoList'
 import { NotesPdfViewer } from '@/components/NotesPdfViewer'
 import { grantsNotes, grantsVideo } from '@/lib/options'
 
@@ -57,9 +57,7 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
       {videos.length > 0 && (
         <div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px' }}>Videos</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {videos.map((item) => <VideoPlayer key={item.id} itemId={item.id} title={item.title} durationSeconds={item.durationSeconds} />)}
-          </div>
+          <VideoList items={videos.map((item) => ({ id: item.id, title: item.title, durationSeconds: item.durationSeconds }))} />
         </div>
       )}
     </section>
