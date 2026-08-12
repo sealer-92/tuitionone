@@ -1,11 +1,16 @@
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { ModulesGrid } from '@/components/ModulesGrid'
 import { RaiseIssueForm } from '@/components/RaiseIssueForm'
 import { DashboardGreeting } from '@/components/DashboardGreeting'
 
-export const metadata = { title: 'My Modules — Tuition One' }
+export const metadata = {
+  title: 'My Modules — Tuition One',
+  description: 'View the course videos and study notes you\'ve purchased.',
+  robots: { index: false, follow: false },
+}
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -46,7 +51,7 @@ export default async function DashboardPage() {
       {purchases.length === 0 ? (
         <div style={{ padding: '60px 0', textAlign: 'center', fontFamily: 'var(--font-body)', color: 'var(--fg-2)' }}>
           <p>You haven&apos;t purchased any courses yet.</p>
-          <a href="/courses" style={{ color: 'var(--orange-deep)', fontWeight: 600 }}>Browse courses →</a>
+          <Link href="/courses" style={{ color: 'var(--orange-deep)', fontWeight: 600 }}>Browse courses →</Link>
         </div>
       ) : (
         <ModulesGrid purchases={purchases} />

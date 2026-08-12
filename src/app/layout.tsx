@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
 import { Fraunces, Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { SessionTimeout } from '@/components/SessionTimeout'
+import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { auth } from '@/lib/auth'
 
 // Variable fonts: omit `weight` to load the full range; `axes` adds extra axes.
@@ -33,9 +36,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
         {session?.user && <SessionTimeout />}
+        <AnalyticsTracker />
         <Header />
         <main>{children}</main>
         <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

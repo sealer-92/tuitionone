@@ -6,8 +6,14 @@ import { CourseList }    from '@/components/CourseList'
 import { Testimonial }   from '@/components/Testimonial'
 import { CtaBand }       from '@/components/CtaBand'
 import { ContactBlock }  from '@/components/ContactBlock'
-import { Sparkles, PlayCircle, Quote, MessageCircle } from 'lucide-react'
+import { Button }        from '@/components/Button'
+import { Sparkles, PlayCircle, Quote, MessageCircle, HelpCircle } from 'lucide-react'
 import { getActiveCourses } from '@/lib/catalog'
+
+export const metadata = {
+  description:
+    'Online video courses and study notes for Leaving Cert and Junior Cycle Maths, Chemistry, Biology and Science. Learn at your own pace, from €150.',
+}
 
 export default async function HomePage() {
   const courses = await getActiveCourses()
@@ -42,6 +48,19 @@ export default async function HomePage() {
         subtitle="Video courses in Leaving Cert Maths (Higher & Ordinary), Leaving Cert Chemistry and Junior Cycle Maths — plus study notes for Leaving Cert Biology and Junior Cycle Science. From €150 with a digital or printed booklet."
       >
         <CourseList courses={courses} />
+      </Section>
+
+      <Section
+        center
+        narrow
+        eyebrow="Got a question?"
+        eyebrowIcon={<HelpCircle size={16} />}
+        title="Pricing, payment, access and signing in — answered"
+        subtitle="Check our FAQs for quick answers, or reach out and we'll help directly."
+      >
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Button variant="secondary" href="/faq">Read the FAQs</Button>
+        </div>
       </Section>
 
       <Section

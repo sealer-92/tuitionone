@@ -2,9 +2,12 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from './Button'
 
 export function AuthSignInForm({ callbackUrl }: { callbackUrl?: string }) {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -26,7 +29,7 @@ export function AuthSignInForm({ callbackUrl }: { callbackUrl?: string }) {
     if (res?.error) {
       setError('No account found for that email. Have you purchased a course?')
     } else {
-      window.location.href = '/auth/verify'
+      router.push('/auth/verify')
     }
   }
 
@@ -81,7 +84,7 @@ export function AuthSignInForm({ callbackUrl }: { callbackUrl?: string }) {
 
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)', textAlign: 'center', margin: 0 }}>
         Don&apos;t have an account?{' '}
-        <a href="/courses" style={{ color: 'var(--orange-deep)', fontWeight: 600 }}>Purchase a course first</a>.
+        <Link href="/courses" style={{ color: 'var(--orange-deep)', fontWeight: 600 }}>Purchase a course first</Link>.
       </p>
     </form>
   )

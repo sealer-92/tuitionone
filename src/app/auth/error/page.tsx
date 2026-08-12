@@ -1,5 +1,9 @@
+import Link from 'next/link'
+
 export const metadata = {
   title: 'Sign-in error — Tuition One',
+  description: 'There was a problem signing in to Tuition One.',
+  robots: { index: false, follow: false },
 }
 
 const messages: Record<string, string> = {
@@ -21,9 +25,9 @@ export default async function AuthErrorPage({ searchParams }: { searchParams: Pr
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 17, lineHeight: 1.6, color: 'var(--fg-2)', margin: '0 0 24px' }}>
           {message}
         </p>
-        <a href="/auth/signin" style={{ display: 'inline-block', background: 'var(--orange)', color: 'white', fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, padding: '12px 24px', borderRadius: 12, textDecoration: 'none' }}>
+        <Link href="/auth/signin" style={{ display: 'inline-block', background: 'var(--orange)', color: 'white', fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, padding: '12px 24px', borderRadius: 12, textDecoration: 'none' }}>
           Back to sign in
-        </a>
+        </Link>
       </div>
     </section>
   )

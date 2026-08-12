@@ -1,9 +1,12 @@
 import { Check, Mail, Package } from 'lucide-react'
+import Link from 'next/link'
 import { db } from '@/lib/db'
 import { grantsVideo, grantsNotes, needsShipping } from '@/lib/options'
 
 export const metadata = {
   title: 'Payment confirmed — Tuition One',
+  description: 'Your Tuition One payment has been confirmed.',
+  robots: { index: false, follow: false },
 }
 
 export default async function CheckoutSuccessPage({
@@ -62,9 +65,9 @@ export default async function CheckoutSuccessPage({
           </div>
         )}
 
-        <a href="/auth/signin" style={{ display: 'inline-block', background: 'var(--orange)', color: 'white', fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, padding: '13px 28px', borderRadius: 12, textDecoration: 'none' }}>
+        <Link href="/auth/signin" style={{ display: 'inline-block', background: 'var(--orange)', color: 'white', fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, padding: '13px 28px', borderRadius: 12, textDecoration: 'none' }}>
           Sign in to my account
-        </a>
+        </Link>
       </div>
     </section>
   )

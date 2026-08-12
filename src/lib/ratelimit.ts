@@ -21,3 +21,10 @@ export const checkoutRateLimit = new Ratelimit({
   analytics: false,
   prefix: 'rl:checkout',
 })
+
+export const pageViewRateLimit = new Ratelimit({
+  redis:   getRedis(),
+  limiter: Ratelimit.slidingWindow(120, '1 m'),
+  analytics: false,
+  prefix: 'rl:pageview',
+})

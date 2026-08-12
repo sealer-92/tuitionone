@@ -1,7 +1,10 @@
 import { Mail } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata = {
   title: 'Check your email — Tuition One',
+  description: 'Check your email for a secure sign-in link to Tuition One.',
+  robots: { index: false, follow: false },
 }
 
 export default function VerifyPage() {
@@ -19,7 +22,7 @@ export default function VerifyPage() {
         </p>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-3)', marginTop: 20 }}>
           Didn&apos;t get it? Check your spam folder, or{' '}
-          <a href="/auth/signin" style={{ color: 'var(--orange-deep)', fontWeight: 600 }}>try again</a>.
+          <Link href="/auth/signin" style={{ color: 'var(--orange-deep)', fontWeight: 600 }}>try again</Link>.
         </p>
       </div>
     </section>
