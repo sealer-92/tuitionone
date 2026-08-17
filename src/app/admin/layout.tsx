@@ -2,6 +2,9 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
+// Admin pages are private and behind auth — keep them out of search results.
+export const metadata = { robots: { index: false, follow: false } }
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session?.user) redirect('/auth/signin?callbackUrl=/admin')
@@ -17,6 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <nav className="admin-nav">
           {[
             { href: '/admin',            label: 'Overview' },
+            { href: '/admin/analytics',  label: 'Analytics' },
             { href: '/admin/courses',    label: 'Courses' },
             { href: '/admin/enrolments', label: 'Enrolments' },
             { href: '/admin/support',    label: 'Support' },

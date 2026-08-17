@@ -52,7 +52,10 @@ export function Footer() {
 
       <div style={{ maxWidth: 1200, margin: '40px auto 0', paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', fontFamily: 'var(--font-ui)', fontSize: 12, color: 'rgba(245,239,228,0.5)' }}>
         <div>© 2026 Tuition One Grinds</div>
-        <div>Terms · Privacy · Refunds</div>
+        <div>
+          <Link href="/faq" style={{ color: 'rgba(245,239,228,0.5)', textDecoration: 'none' }}>FAQs</Link>
+          {' · '}Terms · Privacy · Refunds
+        </div>
       </div>
     </footer>
   )

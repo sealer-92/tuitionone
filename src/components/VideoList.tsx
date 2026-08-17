@@ -89,9 +89,16 @@ export function VideoList({ items }: { items: VideoItem[] }) {
                 </div>
 
                 {url ? (
-                  <video controls autoPlay style={{ width: '100%', display: 'block', maxHeight: 480 }} src={url} />
+                  <video
+                    controls
+                    autoPlay
+                    controlsList="nodownload"
+                    onContextMenu={(e) => e.preventDefault()}
+                    style={{ width: '100%', display: 'block', maxHeight: 480 }}
+                    src={url}
+                  />
                 ) : (
-                  <div style={{ aspectRatio: '1 / 1', maxHeight: 360, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
+                  <div style={{ width: '100%', aspectRatio: '16 / 9', maxHeight: 360, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
                     <button
                       onClick={() => loadVideo(item.id)}
                       disabled={loading}

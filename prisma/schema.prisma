@@ -76,6 +76,7 @@ model User {
   tickets     SupportTicket[]
   accounts    Account[]
   sessions    Session[]
+  pageViews   PageView[]
 }
 
 // ─── Courses ──────────────────────────────────────────────────────────────────
@@ -184,6 +185,26 @@ model AuditLog {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+// ─── Analytics ────────────────────────────────────────────────────────────────
+
+// First-party, cookie-free pageview tracking for the admin analytics dashboard.
+// sessionId is a random id the client keeps in sessionStorage — not tied to any
+// cookie or fingerprint — used only to estimate unique visits.
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  referrer  String?
+  sessionId String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([sessionId])
 }
 
 // ─── Support ──────────────────────────────────────────────────────────────────

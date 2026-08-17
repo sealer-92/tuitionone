@@ -1,7 +1,10 @@
+import Link from 'next/link'
 import { AuthSignInForm } from '@/components/AuthSignInForm'
 
 export const metadata = {
   title: 'Sign In — Tuition One',
+  description: 'Sign in to Tuition One with a secure email link — no password needed.',
+  robots: { index: false, follow: false },
 }
 
 export default async function SignInPage({
@@ -28,7 +31,7 @@ export default async function SignInPage({
         {params.error === 'AccessDenied' && (
           <div style={{ background: 'rgba(181,72,60,0.08)', border: '1px solid rgba(181,72,60,0.25)', borderRadius: 12, padding: '14px 18px', marginBottom: 20, fontFamily: 'var(--font-body)', fontSize: 14, color: '#B5483C' }}>
             No account found. You need to purchase a course before signing in.{' '}
-            <a href="/courses" style={{ color: '#B5483C', fontWeight: 600, textDecoration: 'underline' }}>Browse courses →</a>
+            <Link href="/courses" style={{ color: '#B5483C', fontWeight: 600, textDecoration: 'underline' }}>Browse courses →</Link>
           </div>
         )}
 
