@@ -73,9 +73,9 @@ describe('access grants', () => {
     expect(grantsVideo('PHYSICAL_BOOKLET')).toBe(false)
   })
 
-  it('grants notes for everything except PHYSICAL_BOOKLET', () => {
-    expect(grantsNotes('FULL')).toBe(true)
-    expect(grantsNotes('FULL_PHYSICAL')).toBe(true)
+  it('grants notes only for DIGITAL_BOOKLET (digital booklets are not offered yet)', () => {
+    expect(grantsNotes('FULL')).toBe(false)
+    expect(grantsNotes('FULL_PHYSICAL')).toBe(false)
     expect(grantsNotes('DIGITAL_BOOKLET')).toBe(true)
     expect(grantsNotes('PHYSICAL_BOOKLET')).toBe(false)
   })

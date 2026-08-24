@@ -45,6 +45,10 @@ describe('ModulesGrid', () => {
     expect(screen.getByText('Junior Cycle Science')).toBeDefined()
     expect(screen.getByText('HL_MATHS')).toBeDefined()
     expect(screen.getByText('2 videos')).toBeDefined()
+  })
+
+  it('shows a booklets count when the purchase grants notes access', () => {
+    render(<ModulesGrid purchases={[{ ...seniorMaths, option: 'DIGITAL_BOOKLET' }]} />)
     expect(screen.getByText('1 booklets')).toBeDefined()
   })
 

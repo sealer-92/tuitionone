@@ -5,7 +5,7 @@ import { ContactBlock } from '@/components/ContactBlock'
 
 export const metadata = {
   title: 'FAQs — Tuition One',
-  description: 'Answers to common questions about course pricing, paying by card, accessing your videos and notes, and signing in with an email link.',
+  description: 'Answers to common questions about course pricing, paying by card, accessing your videos, and signing in with an email link.',
 }
 
 const categories: { title: string; items: { q: string; a: string }[] }[] = [
@@ -14,11 +14,15 @@ const categories: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: 'How much do the courses cost?',
-        a: 'Pricing starts from €150 and varies by subject and the option you choose. Pick a course on the Enrol page to see the exact price for each option.',
+        a: 'The online course is €150, or €200 if you\'d like a printed booklet posted to you as well. Pick a course on the Enrol page to see it broken down before you pay.',
       },
       {
-        q: "What's the difference between the course options?",
-        a: 'Full course access includes every video lesson plus the study notes. Booklet-only options give you just the notes, either as a digital download or a printed copy posted to your home — priced accordingly.',
+        q: "What's the difference between the two options?",
+        a: 'Both include full access to every video lesson. The €200 option also posts you a printed course booklet. We don\'t currently offer a digital booklet — that\'s coming in a future release.',
+      },
+      {
+        q: 'Which subjects are available right now?',
+        a: 'Higher and Ordinary Level Maths, and Junior Cycle Maths (Higher Level), are open for enrolment today. Higher Level Chemistry, Higher Level Biology and Junior Cycle Science are coming soon — keep an eye on the Courses page.',
       },
     ],
   },
@@ -43,16 +47,16 @@ const categories: { title: string; items: { q: string; a: string }[] }[] = [
     title: 'Accessing your content',
     items: [
       {
-        q: 'How do I access my videos and notes after purchasing?',
-        a: 'Sign in using the link emailed to you, then go to "My Modules" in your dashboard — every video and note you\'ve purchased is organised there by module.',
+        q: 'How do I access my videos after purchasing?',
+        a: 'Sign in using the link emailed to you, then go to "My Modules" in your dashboard — every video you\'ve purchased is organised there by module.',
       },
       {
         q: 'Can I watch on any device?',
-        a: "Yes — everything is 100% online, so you can watch and read on your phone, tablet or laptop, anytime, and pause, rewind or revisit lessons as often as you like.",
+        a: "Yes — everything is 100% online, so you can watch on your phone, tablet or laptop, anytime, and pause, rewind or revisit lessons as often as you like.",
       },
       {
         q: 'I paid for a printed booklet — when will it arrive?',
-        a: "We'll post it to the delivery address you gave at checkout and be in touch to confirm timing. If you also chose the digital booklet, that's available in your dashboard as soon as you sign in.",
+        a: "We'll post it to the delivery address you gave at checkout and be in touch to confirm timing.",
       },
     ],
   },

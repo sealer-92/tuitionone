@@ -18,14 +18,14 @@ export function Footer() {
             </div>
           </div>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(245,239,228,0.65)', marginTop: 20, maxWidth: 320, lineHeight: 1.55 }}>
-            Online video courses and study notes in Maths, Chemistry and more, for Leaving Cert and Junior Cycle students across Ireland.
+            Online video courses in Maths for Leaving Cert and Junior Cycle students across Ireland.
           </p>
         </div>
 
         <div>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--orange)', marginBottom: 14 }}>Courses</div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {['Higher Maths', 'Ordinary Maths', 'Higher Chemistry', 'Junior Cycle'].map((l) => (
+            {['Higher Level Maths', 'Ordinary Level Maths', 'Junior Cycle Maths'].map((l) => (
               <li key={l}>
                 <Link href="/courses" style={{ color: 'rgba(245,239,228,0.75)', fontFamily: 'var(--font-body)', fontSize: 14, textDecoration: 'none' }}>{l}</Link>
               </li>

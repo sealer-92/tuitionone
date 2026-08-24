@@ -15,7 +15,6 @@ const DARK        = '#1F362D'
 const STATS = [
   { value: '10+', label: 'years teaching experience' },
   { value: '€150', label: 'from, per course' },
-  { value: '€30', label: 'from, per booklet' },
   { value: 'Anytime', label: 'learn at your own pace' },
 ]
 

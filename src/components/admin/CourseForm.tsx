@@ -92,7 +92,7 @@ export function CourseForm({ initial }: { initial?: Partial<CourseFormValues> })
         <label><span style={label}>Weeks</span><input type="number" style={field} value={form.weeks} onChange={(e) => upd('weeks', Number(e.target.value))} /></label>
         <label><span style={label}>Status</span>
           <select style={field} value={form.status} onChange={(e) => upd('status', e.target.value)}>
-            <option value="DRAFT">Draft</option><option value="ACTIVE">Active</option><option value="ARCHIVED">Archived</option>
+            <option value="DRAFT">Draft</option><option value="ACTIVE">Active</option><option value="COMING_SOON">Coming soon</option><option value="ARCHIVED">Archived</option>
           </select>
         </label>
         <label><span style={label}>Format</span>
@@ -108,8 +108,8 @@ export function CourseForm({ initial }: { initial?: Partial<CourseFormValues> })
         Leave a price blank to hide that option. {isVideo ? 'Full options include the videos.' : 'Booklet-only courses sell digital and printed booklets.'}
       </p>
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: '1fr 1fr' }}>
-        {isVideo && priceInput('fullPriceEuros', 'Videos + digital booklet')}
-        {isVideo && priceInput('fullPhysicalPriceEuros', 'Videos + digital + printed')}
+        {isVideo && priceInput('fullPriceEuros', 'Online course')}
+        {isVideo && priceInput('fullPhysicalPriceEuros', 'Online course + printed booklet')}
         {priceInput('digitalBookletPriceEuros', 'Digital booklet only')}
         {priceInput('physicalBookletPriceEuros', 'Printed booklet only')}
       </div>
