@@ -17,10 +17,10 @@ export interface OptionInfo {
 }
 
 const OPTION_META: Record<PurchaseOption, { label: string; description: string }> = {
-  FULL:             { label: 'Videos + digital booklet',                 description: 'Online access to all videos and digital booklets.' },
-  FULL_PHYSICAL:    { label: 'Videos + digital booklet + printed booklet', description: 'Everything online, plus a printed booklet posted to you.' },
-  DIGITAL_BOOKLET:  { label: 'Digital booklet only',                      description: 'Online access to the digital booklets — no videos.' },
-  PHYSICAL_BOOKLET: { label: 'Printed booklet only',                      description: 'A printed booklet posted to you — no online access.' },
+  FULL:             { label: 'Online course',                description: 'Online access to all video lessons.' },
+  FULL_PHYSICAL:    { label: 'Online course + printed booklet', description: 'All video lessons, plus a printed booklet posted to you.' },
+  DIGITAL_BOOKLET:  { label: 'Digital booklet only',          description: 'Online access to the digital booklet — no videos.' },
+  PHYSICAL_BOOKLET: { label: 'Printed booklet only',          description: 'A printed booklet posted to you — no online access.' },
 }
 
 // Returns the purchasable options for a course, in display order, with prices.
@@ -47,8 +47,10 @@ export function grantsVideo(option: PurchaseOption): boolean {
   return option === 'FULL' || option === 'FULL_PHYSICAL'
 }
 
+// Digital booklets aren't offered yet — only a standalone DIGITAL_BOOKLET
+// purchase grants online notes access for now.
 export function grantsNotes(option: PurchaseOption): boolean {
-  return option === 'FULL' || option === 'FULL_PHYSICAL' || option === 'DIGITAL_BOOKLET'
+  return option === 'DIGITAL_BOOKLET'
 }
 
 export function needsShipping(option: PurchaseOption): boolean {

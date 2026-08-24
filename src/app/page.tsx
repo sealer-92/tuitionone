@@ -8,15 +8,15 @@ import { CtaBand }       from '@/components/CtaBand'
 import { ContactBlock }  from '@/components/ContactBlock'
 import { Button }        from '@/components/Button'
 import { Sparkles, PlayCircle, Quote, MessageCircle, HelpCircle } from 'lucide-react'
-import { getActiveCourses } from '@/lib/catalog'
+import { getCatalogCourses } from '@/lib/catalog'
 
 export const metadata = {
   description:
-    'Online video courses and study notes for Leaving Cert and Junior Cycle Maths, Chemistry, Biology and Science. Learn at your own pace, from €150.',
+    'Online video courses for Leaving Cert and Junior Cycle Maths. Learn at your own pace, from €150.',
 }
 
 export default async function HomePage() {
-  const courses = await getActiveCourses()
+  const courses = await getCatalogCourses()
   return (
     <>
       <Hero />
@@ -45,7 +45,7 @@ export default async function HomePage() {
       <Section
         eyebrow="Courses & notes"
         title="Full courses and study notes"
-        subtitle="Video courses in Leaving Cert Maths (Higher & Ordinary), Leaving Cert Chemistry and Junior Cycle Maths — plus study notes for Leaving Cert Biology and Junior Cycle Science. From €150 with a digital or printed booklet."
+        subtitle="Video courses in Leaving Cert Maths (Higher & Ordinary) and Junior Cycle Maths (Higher Level), from €150 — or €200 with a printed booklet posted to you. Chemistry, Biology and Science are coming soon."
       >
         <CourseList courses={courses} />
       </Section>

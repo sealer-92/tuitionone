@@ -27,7 +27,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Tuition One — Online Exam Prep for Leaving Cert & Junior Cycle',
   description:
-    'Online video courses and study notes for Leaving Cert and Junior Cycle Maths, Chemistry, Biology and Science. Learn at your own pace, from €150.',
+    'Online video courses for Leaving Cert and Junior Cycle Maths. Learn at your own pace, from €150.',
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

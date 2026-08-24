@@ -1,6 +1,6 @@
-import { CourseFormat } from '@prisma/client'
+import { CourseFormat, CourseStatus } from '@prisma/client'
 
-// Display + pricing shape for an active course, sourced from the database.
+// Display + pricing shape for a course, sourced from the database.
 // Satisfies CoursePricing in ./options so option helpers work directly.
 export interface Course {
   id: string
@@ -10,6 +10,7 @@ export interface Course {
   year: string
   weeks: number
   schedule: string
+  status: CourseStatus
   format: CourseFormat
   fullPriceCents: number | null
   fullPhysicalPriceCents: number | null

@@ -17,6 +17,7 @@ enum CourseStatus {
   DRAFT
   ACTIVE
   ARCHIVED
+  COMING_SOON
 }
 
 enum CourseFormat {

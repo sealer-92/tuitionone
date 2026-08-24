@@ -4,6 +4,14 @@ import { optionsForCourse } from '@/lib/options'
 
 export const metadata = { title: 'Courses — Admin' }
 
+const STATUS_LABEL: Record<string, string> = {
+  DRAFT: 'Draft', ACTIVE: 'Active', COMING_SOON: 'Coming soon', ARCHIVED: 'Archived',
+}
+const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
+  ACTIVE:      { bg: 'rgba(92,138,78,0.16)',  fg: 'var(--leaf-deep)' },
+  COMING_SOON: { bg: 'rgba(229,143,63,0.16)', fg: 'var(--orange-deep)' },
+}
+
 export default async function AdminCoursesPage() {
   const courses = await db.course.findMany({
     orderBy: { createdAt: 'desc' },
@@ -37,8 +45,8 @@ export default async function AdminCoursesPage() {
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{c.title}</td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-2)' }}>{c.subject}</td>
                 <td style={{ padding: '12px 16px' }}>
-                  <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999, background: c.status === 'ACTIVE' ? 'rgba(92,138,78,0.16)' : 'rgba(27,42,36,0.08)', color: c.status === 'ACTIVE' ? 'var(--leaf-deep)' : 'var(--fg-3)' }}>
-                    {c.status}
+                  <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999, background: STATUS_COLOR[c.status]?.bg ?? 'rgba(27,42,36,0.08)', color: STATUS_COLOR[c.status]?.fg ?? 'var(--fg-3)' }}>
+                    {STATUS_LABEL[c.status] ?? c.status}
                   </span>
                 </td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--ink)' }}>{c._count.modules}</td>

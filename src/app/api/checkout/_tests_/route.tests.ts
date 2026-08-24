@@ -84,7 +84,7 @@ describe('POST /api/checkout — duplicate purchase prevention', () => {
   })
 
   it('allows the same email to buy a different course', async () => {
-    const res = await POST(checkoutRequest({ courseId: 'hl-chemistry' }))
+    const res = await POST(checkoutRequest({ courseId: 'ol-maths' }))
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.url).toContain('https://checkout.stripe.test')
@@ -140,8 +140,13 @@ describe('POST /api/checkout — input validation', () => {
   })
 
   it('rejects an option the course does not offer', async () => {
-    // hl-biology is booklet-only, so FULL is never purchasable.
-    const res = await POST(checkoutRequest({ courseId: 'hl-biology', option: 'FULL', parentEmail: FRESH_EMAIL }))
+    // Digital booklets aren't priced for hl-maths right now, so this option isn't purchasable.
+    const res = await POST(checkoutRequest({ courseId: 'hl-maths', option: 'DIGITAL_BOOKLET', parentEmail: FRESH_EMAIL }))
     expect(res.status).toBe(400)
+  })
+
+  it('404s for a coming-soon course', async () => {
+    const res = await POST(checkoutRequest({ courseId: 'hl-biology', option: 'PHYSICAL_BOOKLET', parentEmail: FRESH_EMAIL }))
+    expect(res.status).toBe(404)
   })
 })
