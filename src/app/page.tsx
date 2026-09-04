@@ -1,4 +1,5 @@
 import { Hero }          from '@/components/Hero'
+import { HeroStats }     from '@/components/HeroStats'
 import { Section }       from '@/components/Section'
 import { ValueProps }    from '@/components/ValueProps'
 import { AudienceCards } from '@/components/AudienceCards'
@@ -20,6 +21,7 @@ export default async function HomePage() {
   return (
     <div className="cursor-stationery">
       <Hero />
+      <HeroStats />
 
       <Section
         center
