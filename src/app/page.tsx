@@ -18,7 +18,7 @@ export const metadata = {
 export default async function HomePage() {
   const courses = await getCatalogCourses()
   return (
-    <>
+    <div className="cursor-stationery">
       <Hero />
 
       <Section
@@ -85,6 +85,6 @@ export default async function HomePage() {
       </Section>
 
       <CtaBand />
-    </>
+    </div>
   )
 }

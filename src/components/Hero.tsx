@@ -1,155 +1,290 @@
-import { Button } from './Button'
-import { ArrowRight } from 'lucide-react'
+'use client'
 
-const PAPER       = '#F5EFE4'
-const ORANGE      = '#E58F3F'
-const ORANGE_SOFT = '#F0B97A'
-const ORANGE_DEEP = '#C97529'
-const LEAF        = '#5C8A4E'
-const LEAF_DEEP   = '#3F6A35'
-const SAGE        = '#C2A98A'
-const SAGE_SOFT   = '#DCC9B0'
-const INK         = '#1B2A24'
-const DARK        = '#1F362D'
+import Link from 'next/link'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
-const STATS = [
-  { value: '10+', label: 'years teaching experience' },
-  { value: '€150', label: 'from, per course' },
-  { value: 'Anytime', label: 'learn at your own pace' },
+const VIDEO_SRC =
+  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4'
+
+const SCRUB_SENSITIVITY = 0.8
+
+const TYPED_TEXT =
+  'Glad you stopped by. Pick your subject, learn at your own pace. What are we studying today?'
+
+const CONTACT_EMAIL = 'tuitiononegrinds@gmail.com'
+
+const PILLS = [
+  { label: 'Browse the courses',      href: '/courses' },
+  { label: 'Start learning',          href: '/enrol'   },
+  { label: 'See how it works',        href: '/about'   },
+  { label: 'Questions? Read the FAQs', href: '/faq'    },
 ]
 
+const MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+
+function subscribeToMotionPreference(onChange: () => void) {
+  const mq = window.matchMedia(MOTION_QUERY)
+  mq.addEventListener('change', onChange)
+  return () => mq.removeEventListener('change', onChange)
+}
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    subscribeToMotionPreference,
+    () => window.matchMedia(MOTION_QUERY).matches,
+    () => false,
+  )
+}
+
+// Reveals `text` one character at a time after `startDelay`, so the line reads
+// as if it's being typed rather than appearing all at once.
+function useTypewriter(text: string, speed = 38, startDelay = 600) {
+  const [count, setCount] = useState(0)
+  const reduced = usePrefersReducedMotion()
+
+  useEffect(() => {
+    if (reduced) return
+
+    let interval: ReturnType<typeof setInterval>
+    const timeout = setTimeout(() => {
+      interval = setInterval(() => {
+        setCount((c) => {
+          if (c >= text.length) {
+            clearInterval(interval)
+            return c
+          }
+          return c + 1
+        })
+      }, speed)
+    }, startDelay)
+
+    return () => {
+      clearTimeout(timeout)
+      clearInterval(interval)
+    }
+  }, [text, speed, startDelay, reduced])
+
+  const shown = reduced ? text.length : count
+  return { displayed: text.slice(0, shown), done: shown >= text.length }
+}
+
 export function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const targetTime = useRef(0)
+  const seeking = useRef(false)
+  const prevX = useRef<number | null>(null)
+
+  const { displayed, done } = useTypewriter(TYPED_TEXT)
+  const [pillsIn, setPillsIn] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const t = setTimeout(() => setPillsIn(true), 400)
+    return () => clearTimeout(t)
+  }, [])
+
+  // Horizontal mouse movement scrubs the clip. Without a mouse there's nothing
+  // to scrub with, so the video just loops instead of freezing on frame one.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    if (!window.matchMedia('(pointer: fine)').matches) {
+      video.loop = true
+      video.play().catch(() => {})
+      return
+    }
+
+    const seek = () => {
+      seeking.current = true
+      video.currentTime = targetTime.current
+    }
+
+    const onLoadedMetadata = () => { seek() }
+
+    const onSeeked = () => {
+      seeking.current = false
+      if (Math.abs(video.currentTime - targetTime.current) > 0.01) seek()
+    }
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (prevX.current === null) {
+        prevX.current = e.clientX
+        return
+      }
+      const delta = e.clientX - prevX.current
+      prevX.current = e.clientX
+
+      const duration = video.duration
+      if (!duration || Number.isNaN(duration)) return
+
+      const offset = (delta / window.innerWidth) * SCRUB_SENSITIVITY * duration
+      targetTime.current = Math.min(Math.max(targetTime.current + offset, 0), duration)
+
+      if (!seeking.current) seek()
+    }
+
+    video.addEventListener('loadedmetadata', onLoadedMetadata)
+    video.addEventListener('seeked', onSeeked)
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
+
+    if (video.readyState >= 1) onLoadedMetadata()
+
+    return () => {
+      video.removeEventListener('loadedmetadata', onLoadedMetadata)
+      video.removeEventListener('seeked', onSeeked)
+      window.removeEventListener('mousemove', onMouseMove)
+    }
+  }, [])
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard is unavailable on insecure origins — the address is on screen anyway.
+    }
+  }
+
+  const pillBase: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 'var(--radius-pill)',
+    fontFamily: 'var(--font-ui)',
+    fontSize: 'clamp(13px, 1.6vw, 15px)',
+    fontWeight: 500,
+    lineHeight: 1.4,
+    padding: '0.5em 1.15em',
+    margin: '0 0.2em 0.4em 0',
+    whiteSpace: 'nowrap',
+    textDecoration: 'none',
+    transition: 'background 200ms var(--ease), color 200ms var(--ease)',
+  }
+
   return (
-    <section style={{
-      backgroundImage: 'radial-gradient(at 20% 18%, rgba(255,255,255,0.06) 0, transparent 42%), radial-gradient(at 84% 82%, rgba(0,0,0,0.20) 0, transparent 55%), linear-gradient(180deg, var(--chalkboard) 0%, var(--chalkboard-deep) 100%)',
-      color: 'var(--chalk)',
-      padding: 'clamp(56px, 8vw, 104px) var(--container-pad)',
-      overflow: 'hidden',
-    }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(40px, 5vw, 72px)', alignItems: 'center' }}>
-        <div>
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, letterSpacing: '0.04em', color: 'var(--orange-soft)', marginBottom: 22 }}>
-            Expert online exam preparation
-          </div>
+    <section className="hero-shell">
+      <video
+        ref={videoRef}
+        src={VIDEO_SRC}
+        muted
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: '70% center',
+          zIndex: 0,
+        }}
+      />
 
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'clamp(44px, 6vw, 74px)', lineHeight: 1.0, letterSpacing: '-0.025em', color: 'var(--chalk)', margin: 0 }}>
-            Learn the method.<br />
-            <span style={{ fontStyle: 'italic', color: 'var(--orange-soft)' }}>Master the exam.</span>
-          </h1>
+      {/* Chalkboard wash: keeps the footage on-brand and the copy readable
+          whichever frame the scrub lands on. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          backgroundImage:
+            'radial-gradient(at 12% 78%, rgba(229,143,63,0.22) 0, transparent 55%), linear-gradient(100deg, var(--chalkboard-deep) 0%, rgba(31,54,45,0.80) 42%, rgba(44,75,63,0.40) 100%)',
+        }}
+      />
 
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(17px, 2vw, 19px)', lineHeight: 1.6, color: 'rgba(245,239,228,0.82)', marginTop: 24, maxWidth: 520 }}>
-            Structured online courses for the <b style={{ color: 'white', fontWeight: 600 }}>Leaving Certificate</b> and <b style={{ color: 'white', fontWeight: 600 }}>Junior Cycle</b> — video lessons, topic-by-topic exam walkthroughs and course booklets that build confidence and maximise your results.
-          </p>
-
-          <div style={{ display: 'flex', gap: 12, marginTop: 34, flexWrap: 'wrap' }}>
-            <Button variant="primary" size="lg" href="/enrol" icon={<ArrowRight size={16} />}>
-              Start learning
-            </Button>
-            <Button variant="secondary" size="lg" onDark href="/courses">
-              Browse courses
-            </Button>
-          </div>
-
-          <div className="hero-stats" style={{ marginTop: 44 }}>
-            {STATS.map((s, i) => (
-              <div key={s.label} className="hero-stat hero-stat-left" style={{ borderLeft: i === 0 ? 'none' : '1px solid rgba(245,239,228,0.16)' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'clamp(30px, 4vw, 40px)', lineHeight: 1, color: 'var(--orange-soft)', letterSpacing: '-0.02em' }}>
-                  {s.value}
-                </div>
-                <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13.5, color: 'rgba(245,239,228,0.7)', marginTop: 10 }}>
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="hero-copy">
+        <div
+          aria-hidden="true"
+          style={{
+            pointerEvents: 'none',
+            userSelect: 'none',
+            marginBottom: 'clamp(20px, 3vw, 24px)',
+            fontFamily: 'var(--font-body)',
+            fontSize: 'clamp(18px, 4vw, 26px)',
+            lineHeight: 1.3,
+            fontWeight: 400,
+            color: 'var(--chalk)',
+            filter: 'blur(4px)',
+          }}
+        >
+          Hey there — welcome to Tuition One,<br />
+          exam prep from a teacher who marks the papers.
         </div>
 
-        {/* Illustration */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: 520, margin: '0 auto' }}>
-          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} role="img" aria-label="Illustration of a calculator, notebook, ruler, pencil, chemistry flask and a DNA double helix">
-            <g transform="rotate(-7 380 110)">
-              <rect x="280" y="20" width="200" height="240" rx="6" fill={PAPER} />
-              <rect x="280" y="20" width="200" height="22" fill={ORANGE} />
-              {[0,1,2,3,4,5,6,7,8,9].map((i) => (
-                <line key={i} x1="296" y1={64 + i * 20} x2="464" y2={64 + i * 20} stroke={LEAF} strokeWidth="1" opacity="0.45" />
-              ))}
-              <line x1="320" y1="42" x2="320" y2="260" stroke={ORANGE_DEEP} strokeWidth="1.5" opacity="0.55" />
-              {[0,1,2,3,4,5].map((i) => (
-                <circle key={i} cx={293} cy={36 + i * 38} r="3" fill={DARK} opacity="0.35" />
-              ))}
-            </g>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            color: 'var(--chalk)',
+            marginBottom: 'clamp(20px, 3vw, 24px)',
+            fontSize: 'clamp(18px, 4vw, 26px)',
+            lineHeight: 1.35,
+            fontWeight: 400,
+            minHeight: 54,
+          }}
+        >
+          <span className="hero-typed" aria-hidden="true">{displayed}</span>
+          <span className="sr-only">{TYPED_TEXT}</span>
+          {!done && (
+            <span
+              aria-hidden="true"
+              style={{
+                display: 'inline-block',
+                width: 2,
+                height: '1.1em',
+                background: 'var(--orange-soft)',
+                verticalAlign: 'middle',
+                marginLeft: 2,
+                animation: 'blink 1s step-end infinite',
+              }}
+            />
+          )}
+        </p>
 
-            <g transform="rotate(-4 250 410)">
-              <rect x="20" y="388" width="460" height="44" rx="3" fill={SAGE} />
-              <rect x="20" y="388" width="460" height="6" fill={SAGE_SOFT} opacity="0.7" />
-              {Array.from({ length: 23 }).map((_, i) => {
-                const x = 40 + i * 20
-                const tall = i % 2 === 0
-                return <line key={i} x1={x} y1="388" x2={x} y2={tall ? 405 : 398} stroke={INK} strokeWidth="1.4" opacity="0.6" />
-              })}
-              {[0,2,4,6,8,10,12,14,16,18,20].map((n, i) => (
-                <text key={n} x={40 + i * 40} y="424" textAnchor="middle" fontFamily="var(--font-ui)" fontWeight="700" fontSize="11" fill={INK} opacity="0.65">{n}</text>
-              ))}
-            </g>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            opacity: pillsIn ? 1 : 0,
+            transform: pillsIn ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'opacity 0.4s ease, transform 0.4s ease',
+          }}
+        >
+          {PILLS.map((pill) => (
+            <Link key={pill.href} href={pill.href} className="hero-pill" style={pillBase}>
+              {pill.label}
+            </Link>
+          ))}
 
-            <g transform="rotate(-22 250 230)">
-              <rect x="44" y="216" width="32" height="34" rx="4" fill={ORANGE_SOFT} />
-              <rect x="76" y="216" width="22" height="34" fill={LEAF} />
-              <rect x="76" y="224" width="22" height="2" fill={LEAF_DEEP} />
-              <rect x="76" y="240" width="22" height="2" fill={LEAF_DEEP} />
-              <rect x="98" y="216" width="284" height="34" fill={ORANGE} />
-              <rect x="98" y="218" width="284" height="6" fill={ORANGE_SOFT} opacity="0.6" />
-              <polygon points="382,216 422,233 382,250" fill={SAGE_SOFT} />
-              <polygon points="422,233 408,228 408,238" fill={INK} />
-            </g>
-
-            <g transform="rotate(5 240 235)">
-              <rect x="110" y="124" width="208" height="244" rx="16" fill={DARK} opacity="0.25" />
-              <rect x="104" y="116" width="208" height="244" rx="16" fill={ORANGE} />
-              <text x="208" y="142" textAnchor="middle" fontFamily="var(--font-ui)" fontWeight="800" fontSize="10" letterSpacing="2" fill={PAPER} opacity="0.85">TUITION ONE</text>
-              <rect x="124" y="150" width="168" height="54" rx="8" fill={DARK} />
-              <rect x="124" y="150" width="168" height="14" rx="8" fill="#000" opacity="0.25" />
-              <text x="282" y="190" textAnchor="end" fontFamily="ui-monospace, SF Mono, Menlo, monospace" fontWeight="600" fontSize="22" fill={LEAF} opacity="0.95">3.14</text>
-              {Array.from({ length: 4 }).map((_, r) =>
-                Array.from({ length: 4 }).map((_, c) => {
-                  const x = 124 + c * 42
-                  const y = 220 + r * 36
-                  const isEquals = r === 3 && c === 3
-                  const isRight  = c === 3
-                  const fill = isEquals ? LEAF : isRight ? ORANGE_DEEP : PAPER
-                  return <rect key={`${r}-${c}`} x={x} y={y} width="34" height="28" rx="6" fill={fill} />
-                })
+          <button
+            type="button"
+            onClick={copyEmail}
+            className="hero-pill-outline"
+            style={{ ...pillBase, gap: 'clamp(8px, 1.5vw, 12px)', border: 0 }}
+          >
+            <span>
+              Reach us:{' '}
+              <span style={{ textDecoration: 'underline', textUnderlineOffset: 1 }}>{CONTACT_EMAIL}</span>
+            </span>
+            <span style={{ display: 'inline-flex', width: 12, height: 12, flexShrink: 0 }}>
+              {copied ? (
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M1.5 6.5 L4.5 9.5 L10.5 2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <rect x="0.6" y="0.6" width="7.3" height="7.3" rx="1.3" stroke="currentColor" strokeWidth="1.1" />
+                  <rect x="4.1" y="4.1" width="7.3" height="7.3" rx="1.3" stroke="currentColor" strokeWidth="1.1" />
+                </svg>
               )}
-            </g>
-
-            <g transform="rotate(-12 110 360)">
-              <rect x="60" y="338" width="92" height="44" rx="6" fill={ORANGE_SOFT} />
-              <rect x="60" y="338" width="92" height="14" fill={ORANGE} />
-              <text x="106" y="370" textAnchor="middle" fontFamily="var(--font-ui)" fontWeight="700" fontSize="9" letterSpacing="1.5" fill={INK} opacity="0.6">ERASE</text>
-            </g>
-
-            <g transform="rotate(8 70 90)">
-              <rect x="58" y="22" width="22" height="36" rx="3" fill={PAPER} stroke={INK} strokeWidth="2" />
-              <rect x="54" y="14" width="30" height="12" rx="2" fill={ORANGE_DEEP} />
-              <path d="M 50 58 L 88 58 L 108 130 Q 108 148 90 148 L 48 148 Q 30 148 30 130 Z" fill={PAPER} stroke={INK} strokeWidth="2" />
-              <path d="M 38 110 L 100 110 L 104 130 Q 104 144 90 144 L 48 144 Q 34 144 34 130 Z" fill={LEAF} opacity="0.85" />
-              <circle cx="58" cy="124" r="3" fill={PAPER} opacity="0.7" />
-              <circle cx="74" cy="118" r="2" fill={PAPER} opacity="0.7" />
-              <circle cx="86" cy="128" r="2.5" fill={PAPER} opacity="0.7" />
-              <line x1="42" y1="92" x2="50" y2="92" stroke={INK} strokeWidth="1.2" opacity="0.5" />
-              <line x1="42" y1="76" x2="48" y2="76" stroke={INK} strokeWidth="1.2" opacity="0.5" />
-            </g>
-
-            {/* Biology: DNA double helix */}
-            <g transform="rotate(9 415 320)">
-              <rect x="374" y="278" width="82" height="84" rx="14" fill={PAPER} stroke={INK} strokeWidth="2" opacity="0.97" />
-              <path d="M397 292 C 415 300 415 312 433 320 C 415 328 415 340 397 348" fill="none" stroke={LEAF} strokeWidth="4" strokeLinecap="round" />
-              <path d="M433 292 C 415 300 415 312 397 320 C 415 328 415 340 433 348" fill="none" stroke={ORANGE_DEEP} strokeWidth="4" strokeLinecap="round" />
-              <line x1="397" y1="292" x2="433" y2="292" stroke={INK} strokeWidth="2" opacity="0.4" />
-              <line x1="397" y1="320" x2="433" y2="320" stroke={INK} strokeWidth="2" opacity="0.4" />
-              <line x1="397" y1="348" x2="433" y2="348" stroke={INK} strokeWidth="2" opacity="0.4" />
-            </g>
-          </svg>
+            </span>
+            <span className="sr-only" aria-live="polite">
+              {copied ? 'Email address copied' : ''}
+            </span>
+          </button>
         </div>
       </div>
     </section>

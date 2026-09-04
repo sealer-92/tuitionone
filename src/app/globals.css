@@ -475,3 +475,94 @@ a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Hero: mouse-scrubbed video, typewriter, pill row ───────────────── */
+
+.hero-shell {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* Sticky header is 72px tall, so the hero fills what's left of the viewport. */
+  min-height: calc(100svh - 72px);
+  padding: 0 var(--container-pad) clamp(48px, 8vw, 72px);
+  background: var(--chalkboard-deep);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .hero-shell {
+    justify-content: center;
+    padding-bottom: var(--container-pad);
+    padding-top: var(--container-pad);
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.hero-pill {
+  background: var(--cream);
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.hero-pill:hover {
+  background: var(--chalkboard-deep);
+  color: var(--chalk);
+}
+
+.hero-pill-outline {
+  position: relative;
+  background: transparent;
+  color: var(--chalk);
+  box-shadow: inset 0 0 0 1px var(--chalk);
+}
+
+.hero-pill-outline:hover {
+  background: var(--cream);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--cream);
+}
+
+.hero-pill:focus-visible,
+.hero-pill-outline:focus-visible {
+  outline: 2px solid var(--orange-soft);
+  outline-offset: 3px;
+}
+
+/* ─── Homepage stationery cursor ─────────────────────────────────────── */
+
+/* Pencil to browse, rubber over anything clickable. Mice only — a coarse
+   pointer ignores `cursor` entirely. */
+@media (pointer: fine) {
+  .cursor-stationery,
+  .cursor-stationery * {
+    cursor: url('/cursor-pencil.svg') 7 25, auto;
+  }
+
+  .cursor-stationery a,
+  .cursor-stationery button,
+  .cursor-stationery [role='button'],
+  .cursor-stationery summary {
+    cursor: url('/cursor-rubber.svg') 6 16, pointer;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
