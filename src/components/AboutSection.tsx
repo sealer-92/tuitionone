@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { PlayCircle, BookOpen, FileCheck, Repeat } from 'lucide-react'
 
 const included = [
@@ -10,31 +11,14 @@ const included = [
 export function AboutSection() {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 56, alignItems: 'center' }}>
-      {/* Classroom placeholder */}
       <div style={{ position: 'relative', aspectRatio: '4/5', borderRadius: 20, overflow: 'hidden', background: 'var(--sage-tan-soft)' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--sage-tan-soft) 0%, var(--sage-tan) 100%)' }} />
-        <div className="about-float" style={{ position: 'absolute', left: '8%', top: '10%', width: '30%', padding: 16, background: 'var(--chalkboard)', borderRadius: 8, color: 'var(--chalk)', fontFamily: 'var(--font-body)', fontSize: 12, lineHeight: 1.3, animationDuration: '7.5s' }}>
-          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: 6, marginBottom: 6, fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--orange)' }}>HIGHER MATHS</div>
-          ax² + bx + c = 0<br /><br />x = (−b ± √(b²−4ac)) / 2a
-        </div>
-        <div className="about-float" style={{ position: 'absolute', right: '6%', top: '24%', width: '34%', padding: 16, background: 'var(--chalkboard)', borderRadius: 8, color: 'var(--chalk)', fontFamily: 'var(--font-body)', fontSize: 12, lineHeight: 1.3, animationDuration: '8.5s', animationDelay: '0.6s' }}>
-          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: 6, marginBottom: 6, fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--orange)' }}>HIGHER CHEMISTRY</div>
-          2Mg + O₂ → 2MgO<br /><br />n = m / M
-        </div>
-        <div className="about-float" style={{ position: 'absolute', left: '6%', top: '58%', width: '36%', padding: 18, background: 'var(--paper)', borderRadius: 8, boxShadow: 'var(--shadow-md)', fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--ink)', animationDuration: '6.8s', animationDelay: '1.2s' }}>
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.14em', color: 'var(--orange-deep)', marginBottom: 6 }}>HIGHER BIOLOGY</div>
-          Photosynthesis:<br />
-          6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂
-        </div>
-        <div className="about-float" style={{ position: 'absolute', right: '10%', bottom: '12%', width: '44%', padding: 20, background: 'var(--paper)', borderRadius: 8, boxShadow: 'var(--shadow-md)', fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--ink)', animationDuration: '7.8s', animationDelay: '1.8s' }}>
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.14em', color: 'var(--orange-deep)', marginBottom: 6 }}>WORKBOOK · CH. 4</div>
-          Solve for x:<br />
-          2x² − 5x + 3 = 0<br />
-          <span style={{ color: 'var(--fg-3)' }}>____________</span>
-        </div>
-        <div style={{ position: 'absolute', right: '4%', top: '8%', fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--ink)', fontWeight: 600, opacity: 0.7 }}>
-          ↳ course preview
-        </div>
+        <Image
+          src="/about-classroom.png"
+          alt="A teacher writing algebra and trigonometry on a classroom blackboard"
+          fill
+          style={{ objectFit: 'cover' }}
+          sizes="(max-width: 760px) 100vw, 50vw"
+        />
       </div>
 
       <div>

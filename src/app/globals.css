@@ -283,18 +283,6 @@ a:focus-visible {
 .card-lift:hover  { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .card-lift:active { transform: translateY(-1px); }
 
-/* Slow drift for floating formula/workbook cards (About page). */
-@keyframes about-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
-}
-
-.about-float {
-  animation-name: about-float;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-
 /* Header nav links: animated underline that doesn't shift layout. */
 .nav-link {
   position: relative;
