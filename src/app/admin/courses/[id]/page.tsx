@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { AdminModuleManager } from '@/components/admin/AdminModuleManager'
+import { AdminBookletManager } from '@/components/admin/AdminBookletManager'
 import { CourseForm } from '@/components/admin/CourseForm'
 
 export const metadata = { title: 'Edit course — Admin' }
@@ -16,6 +17,7 @@ export default async function AdminCoursePage({ params }: { params: Promise<{ id
     where: { id },
     include: {
       modules: { orderBy: { order: 'asc' }, include: { contentItems: { orderBy: { createdAt: 'asc' } } } },
+      booklets: { orderBy: { order: 'asc' } },
       _count: { select: { purchases: true } },
     },
   })
@@ -52,7 +54,10 @@ export default async function AdminCoursePage({ params }: { params: Promise<{ id
         physicalBookletPriceEuros: fromCents(course.physicalBookletPriceCents),
       }} />
 
-      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)', margin: '40px 0 16px' }}>Modules &amp; content</h2>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)', margin: '40px 0 16px' }}>Booklets</h2>
+      <AdminBookletManager courseId={course.id} booklets={course.booklets} />
+
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)', margin: '40px 0 16px' }}>Modules &amp; videos</h2>
       <AdminModuleManager courseId={course.id} modules={course.modules} />
     </div>
   )

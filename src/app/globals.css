@@ -283,18 +283,6 @@ a:focus-visible {
 .card-lift:hover  { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .card-lift:active { transform: translateY(-1px); }
 
-/* Slow drift for floating formula/workbook cards (About page). */
-@keyframes about-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
-}
-
-.about-float {
-  animation-name: about-float;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-
 /* Header nav links: animated underline that doesn't shift layout. */
 .nav-link {
   position: relative;
@@ -474,4 +462,28 @@ a:focus-visible {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Homepage pencil cursor ──────────────────────────────────────────────────
+   SVG data-URI cursors, sized 32x32 with explicit width/height (Firefox
+   ignores data-URI cursors without intrinsic dimensions). Each shape is drawn
+   over a --paper silhouette so it stays visible on the dark chalkboard hero as
+   well as on cream. Hotspots: the pencil's graphite tip, the eraser's centre. */
+
+.cursor-pencil {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg transform='rotate(45 16 16)'%3E%3Cpolygon points='12,2 20,2 20,22 16,30 12,22' fill='%23F5EFE4' stroke='%23F5EFE4' stroke-width='3' stroke-linejoin='round'/%3E%3Crect x='12' y='2' width='8' height='5' rx='2' fill='%23F0B97A'/%3E%3Crect x='12' y='6.5' width='8' height='2.5' fill='%23C2A98A'/%3E%3Crect x='12' y='9' width='8' height='13' fill='%23E58F3F'/%3E%3Cpolygon points='12,22 20,22 16,30' fill='%23DCC9B0'/%3E%3Cpolygon points='14.2,26 17.8,26 16,30' fill='%231B2A24'/%3E%3C/g%3E%3C/svg%3E") 6 26, auto;
+}
+
+.cursor-pencil a,
+.cursor-pencil button,
+.cursor-pencil [role="button"] {
+  /* !important: Button, FaqItem and friends set cursor:pointer as an inline
+     style, which would otherwise beat this rule. */
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg transform='rotate(-20 16 16)'%3E%3Crect x='6' y='11' width='20' height='11' rx='3' fill='%23F5EFE4' stroke='%23F5EFE4' stroke-width='3' stroke-linejoin='round'/%3E%3Crect x='6' y='11' width='20' height='11' rx='3' fill='%23F0B97A'/%3E%3Cpath d='M6 14.5 A3 3 0 0 1 9 11.5 L13 11.5 L13 21.5 L9 21.5 A3 3 0 0 1 6 18.5 Z' fill='%23FBF7EF'/%3E%3Crect x='13' y='11' width='1.6' height='11' fill='%23C97529' opacity='0.45'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer !important;
+}
+
+/* Text inputs keep their I-beam — an eraser over a field would be misleading. */
+.cursor-pencil input,
+.cursor-pencil textarea {
+  cursor: text !important;
 }

@@ -1,7 +1,7 @@
 import { Check, Mail, Package } from 'lucide-react'
 import Link from 'next/link'
 import { db } from '@/lib/db'
-import { grantsVideo, grantsNotes, needsShipping } from '@/lib/options'
+import { grantsBooklet, needsShipping } from '@/lib/options'
 
 export const metadata = {
   title: 'Payment confirmed — Tuition One',
@@ -19,9 +19,9 @@ export default async function CheckoutSuccessPage({
     ? await db.purchase.findUnique({ where: { stripeSessionId: session_id }, select: { option: true } })
     : null
 
-  // "Booklet only" purchases (digital or printed) don't include video access.
-  const bookletOnly  = !!purchase && !grantsVideo(purchase.option)
-  const hasDigital   = !!purchase && grantsNotes(purchase.option)
+  // Every purchase comes with a booklet of some kind, so show the card whenever
+  // there is something to say about it.
+  const hasDigital   = !!purchase && grantsBooklet(purchase.option)
   const hasShipping  = !!purchase && needsShipping(purchase.option)
 
   return (
@@ -50,7 +50,7 @@ export default async function CheckoutSuccessPage({
           </div>
         </div>
 
-        {bookletOnly && (
+        {(hasDigital || hasShipping) && (
           <div style={{ background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(92,138,78,0.14)', color: 'var(--leaf-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Package size={20} />

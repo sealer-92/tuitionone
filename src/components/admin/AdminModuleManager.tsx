@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-interface ContentItem { id: string; type: string; title: string; durationSeconds: number | null }
+interface ContentItem { id: string; title: string; durationSeconds: number | null }
 interface ModuleData { id: string; order: number; title: string; thumbnailKey: string | null; contentItems: ContentItem[] }
 
 const field: React.CSSProperties = {
@@ -17,7 +17,6 @@ const btn: React.CSSProperties = {
 
 function UploadContent({ moduleId }: { moduleId: string }) {
   const router = useRouter()
-  const [type, setType] = useState('NOTES')
   const [title, setTitle] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [busy, setBusy] = useState('')
@@ -30,7 +29,7 @@ function UploadContent({ moduleId }: { moduleId: string }) {
       setBusy('Requesting upload URL…')
       const urlRes = await fetch('/api/admin/upload-url', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ moduleId, type, fileName: file.name, contentType: file.type || 'application/octet-stream' }),
+        body: JSON.stringify({ moduleId, type: 'VIDEO', fileName: file.name, contentType: file.type || 'application/octet-stream' }),
       })
       const { uploadUrl, r2Key, error: e1 } = await urlRes.json()
       if (!urlRes.ok) throw new Error(e1 ?? 'Failed to get upload URL')
@@ -42,7 +41,7 @@ function UploadContent({ moduleId }: { moduleId: string }) {
       setBusy('Saving…')
       const save = await fetch('/api/admin/content', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ moduleId, type, title, r2Key }),
+        body: JSON.stringify({ moduleId, title, r2Key }),
       })
       const { error: e2 } = await save.json()
       if (!save.ok) throw new Error(e2 ?? 'Failed to save content')
@@ -55,13 +54,9 @@ function UploadContent({ moduleId }: { moduleId: string }) {
 
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--border)' }}>
-      <select style={field} value={type} onChange={(e) => setType(e.target.value)}>
-        <option value="NOTES">Notes (PDF)</option>
-        <option value="VIDEO">Video</option>
-      </select>
-      <input style={{ ...field, flex: 1, minWidth: 140 }} placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <input type="file" accept={type === 'VIDEO' ? 'video/*' : 'application/pdf'} onChange={(e) => setFile(e.target.files?.[0] ?? null)} style={{ fontFamily: 'var(--font-ui)', fontSize: 12 }} />
-      <button style={btn} onClick={upload} disabled={!!busy}>{busy || 'Upload'}</button>
+      <input style={{ ...field, flex: 1, minWidth: 140 }} placeholder="Video title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} style={{ fontFamily: 'var(--font-ui)', fontSize: 12 }} />
+      <button style={btn} onClick={upload} disabled={!!busy}>{busy || 'Upload video'}</button>
       {error && <span style={{ color: 'var(--danger)', fontFamily: 'var(--font-body)', fontSize: 13, width: '100%' }}>{error}</span>}
     </div>
   )
@@ -161,10 +156,10 @@ export function AdminModuleManager({ courseId, modules }: { courseId: string; mo
               </button>
             </div>
             <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {m.contentItems.length === 0 && <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)' }}>No content yet.</span>}
+              {m.contentItems.length === 0 && <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)' }}>No videos yet.</span>}
               {m.contentItems.map((c) => (
                 <span key={c.id} style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--fg-2)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {c.type === 'VIDEO' ? '🎬' : '📄'} {c.title}
+                  🎬 {c.title}
                   <button onClick={() => deleteContent(c.id, c.title)} style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'var(--danger)', background: 'none', border: 0, cursor: 'pointer' }} aria-label={`Delete ${c.title}`}>
                     ×
                   </button>

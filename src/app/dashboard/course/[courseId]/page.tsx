@@ -3,46 +3,47 @@ import { db } from '@/lib/db'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, BookOpen, Video, Package } from 'lucide-react'
-import { grantsNotes, grantsVideo } from '@/lib/options'
+import { grantsBooklet, grantsVideo } from '@/lib/options'
 import { getThumbnailSignedUrl } from '@/lib/r2'
 import { moduleFallbackPhotoUrl } from '@/lib/modulePhoto'
+import { CollapsibleSection } from '@/components/CollapsibleSection'
+import { BookletViewer } from '@/components/BookletViewer'
 
-type ModuleWithItems = {
+type ModuleWithVideos = {
   id: string
   order: number
   title: string
   thumbnailUrl: string | null
-  contentItems: { type: string }[]
+  videoCount: number
 }
 
-function ModuleList({ courseId, modules, type }: { courseId: string; modules: ModuleWithItems[]; type: 'VIDEO' | 'NOTES' }) {
-  const withContent = modules.filter((m) => m.contentItems.some((i) => i.type === type))
-  if (withContent.length === 0) {
-    return <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Nothing here yet — check back soon.</p>
-  }
+const EMPTY = <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Nothing here yet — check back soon.</p>
+
+function ModuleList({ courseId, modules }: { courseId: string; modules: ModuleWithVideos[] }) {
+  const withVideos = modules.filter((m) => m.videoCount > 0)
+  if (withVideos.length === 0) return EMPTY
+
   return (
     <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
-      {withContent.map((mod, i) => {
-        const count = mod.contentItems.filter((i) => i.type === type).length
-        const countLabel = type === 'VIDEO' ? (count === 1 ? '1 video' : `${count} videos`) : (count === 1 ? '1 booklet' : `${count} booklets`)
-        return (
-          <Link
-            key={mod.id}
-            href={`/dashboard/course/${courseId}/module/${mod.id}`}
-            className="module-tile card-lift"
-            style={{ ['--stagger-i' as string]: i }}
-          >
-            <div className="module-tile-thumb">
-              {/* eslint-disable-next-line @next/next/no-img-element -- presigned R2 URL / third-party photo, not a static/optimizable asset */}
-              <img src={mod.thumbnailUrl ?? moduleFallbackPhotoUrl(mod.id)} alt="" loading="lazy" />
+      {withVideos.map((mod, i) => (
+        <Link
+          key={mod.id}
+          href={`/dashboard/course/${courseId}/module/${mod.id}`}
+          className="module-tile card-lift"
+          style={{ ['--stagger-i' as string]: i }}
+        >
+          <div className="module-tile-thumb">
+            {/* eslint-disable-next-line @next/next/no-img-element -- presigned R2 URL / third-party photo, not a static/optimizable asset */}
+            <img src={mod.thumbnailUrl ?? moduleFallbackPhotoUrl(mod.id)} alt="" loading="lazy" />
+          </div>
+          <div className="module-tile-body">
+            <div className="module-tile-title">{mod.title}</div>
+            <div className="module-tile-meta">
+              Module {mod.order} · {mod.videoCount === 1 ? '1 video' : `${mod.videoCount} videos`}
             </div>
-            <div className="module-tile-body">
-              <div className="module-tile-title">{mod.title}</div>
-              <div className="module-tile-meta">Module {mod.order} · {countLabel}</div>
-            </div>
-          </Link>
-        )
-      })}
+          </div>
+        </Link>
+      ))}
     </div>
   )
 }
@@ -59,29 +60,32 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
   })
   if (purchases.length === 0) notFound()
 
-  const canVideo = purchases.some((p) => grantsVideo(p.option))
-  const canNotes = purchases.some((p) => grantsNotes(p.option))
+  const canVideo   = purchases.some((p) => grantsVideo(p.option))
+  const canBooklet = purchases.some((p) => grantsBooklet(p.option))
 
   const course = await db.course.findUnique({
     where: { id: courseId },
     include: {
       modules: {
         orderBy: { order: 'asc' },
-        include: { contentItems: { orderBy: { createdAt: 'asc' } } },
+        include: { _count: { select: { contentItems: true } } },
       },
+      booklets: { orderBy: { order: 'asc' } },
     },
   })
   if (!course) notFound()
 
-  const modules: ModuleWithItems[] = await Promise.all(
+  const modules: ModuleWithVideos[] = await Promise.all(
     course.modules.map(async (m) => ({
       id: m.id,
       order: m.order,
       title: m.title,
       thumbnailUrl: m.thumbnailKey ? await getThumbnailSignedUrl(m.thumbnailKey) : null,
-      contentItems: m.contentItems,
+      videoCount: m._count.contentItems,
     })),
   )
+
+  const videoCount = modules.reduce((n, m) => n + m.videoCount, 0)
 
   return (
     <section style={{ maxWidth: 900, margin: '0 auto', padding: 'clamp(40px, 6vw, 80px) var(--container-pad)' }}>
@@ -100,7 +104,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
         {course.year} · {course.schedule}
       </p>
 
-      {!canVideo && !canNotes ? (
+      {!canVideo && !canBooklet ? (
         <div style={{ background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px 30px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(229,143,63,0.12)', color: 'var(--orange-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Package size={22} />
@@ -113,22 +117,28 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
-          {canNotes && (
-            <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <BookOpen size={20} /> Booklets
-              </h2>
-              <ModuleList courseId={course.id} modules={modules} type="NOTES" />
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {canBooklet && (
+            <CollapsibleSection
+              title="Booklets"
+              icon={<BookOpen size={20} />}
+              meta={course.booklets.length === 1 ? '1 booklet' : `${course.booklets.length} booklets`}
+            >
+              {course.booklets.length === 0 ? EMPTY : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {course.booklets.map((b) => <BookletViewer key={b.id} bookletId={b.id} title={b.title} />)}
+                </div>
+              )}
+            </CollapsibleSection>
           )}
           {canVideo && (
-            <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Video size={20} /> Videos
-              </h2>
-              <ModuleList courseId={course.id} modules={modules} type="VIDEO" />
-            </div>
+            <CollapsibleSection
+              title="Videos"
+              icon={<Video size={20} />}
+              meta={videoCount === 1 ? '1 video' : `${videoCount} videos`}
+            >
+              <ModuleList courseId={course.id} modules={modules} />
+            </CollapsibleSection>
           )}
         </div>
       )}

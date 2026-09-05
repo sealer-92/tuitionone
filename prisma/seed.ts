@@ -8,10 +8,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const db = new PrismaClient({ adapter });
 
-// Standard pricing (cents). Launch scope only sells videos, with or without a
-// printed booklet — digital booklets aren't ready yet, so that price (and the
-// standalone printed-booklet-only price) is left unset for on-sale courses.
-// Courses still in prep keep their full booklet pricing ready for later.
+// Standard pricing (cents). Every course purchase includes the digital booklet;
+// the €200 option adds a printed copy in the post. The booklet-only products
+// (digital or printed, without the videos) aren't sold on launch courses, so
+// those two prices are left unset. Courses still in prep keep theirs ready.
 const VIDEO_ON_SALE = {
   format: "VIDEO_AND_BOOKLET" as const,
   fullPriceCents: 15000,

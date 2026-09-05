@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { BookOpen, Video, Package } from 'lucide-react'
 import { PurchaseOption } from '@prisma/client'
-import { grantsNotes, grantsVideo, needsShipping } from '@/lib/options'
+import { grantsBooklet, grantsVideo, needsShipping } from '@/lib/options'
 import { SUBJECT_BANNERS, SUBJECT_BANNER_FALLBACK, SUBJECT_BANNER_PATTERN } from '@/lib/subjectBanner'
 
 export interface ModulePurchase {
@@ -18,7 +18,8 @@ export interface ModulePurchase {
     year: string
     weeks: number
     schedule: string
-    modules: { id: string; contentItems: { type: string }[] }[]
+    modules: { id: string; _count: { contentItems: number } }[]
+    booklets: { id: string }[]
   }
 }
 
@@ -32,9 +33,9 @@ const OPTION_LABEL: Record<PurchaseOption, string> = {
 function ModuleCard({ purchase, index }: { purchase: ModulePurchase; index: number }) {
   const { course, option } = purchase
   const canVideo = grantsVideo(option)
-  const canNotes = grantsNotes(option)
-  const totalVideos = course.modules.reduce((n, m) => n + m.contentItems.filter((c) => c.type === 'VIDEO').length, 0)
-  const totalNotes  = course.modules.reduce((n, m) => n + m.contentItems.filter((c) => c.type === 'NOTES').length, 0)
+  const canBooklet = grantsBooklet(option)
+  const totalVideos   = course.modules.reduce((n, m) => n + m._count.contentItems, 0)
+  const totalBooklets = course.booklets.length
 
   return (
     <Link
@@ -69,9 +70,9 @@ function ModuleCard({ purchase, index }: { purchase: ModulePurchase; index: numb
         </p>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-          {canNotes && (
+          {canBooklet && (
             <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>
-              <BookOpen size={13} aria-hidden="true" />{totalNotes} booklets
+              <BookOpen size={13} aria-hidden="true" />{totalBooklets} booklets
             </span>
           )}
           {canVideo && (
@@ -79,7 +80,7 @@ function ModuleCard({ purchase, index }: { purchase: ModulePurchase; index: numb
               <Video size={13} aria-hidden="true" />{totalVideos} videos
             </span>
           )}
-          {!canVideo && !canNotes && (
+          {!canVideo && !canBooklet && (
             <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>
               <Package size={13} aria-hidden="true" />Posted to you
             </span>

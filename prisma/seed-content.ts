@@ -30,7 +30,7 @@ async function upload(key: string, body: Buffer, contentType: string) {
   return key;
 }
 
-// Two modules per course; each module gets one PDF + one video.
+// Two modules per course, each with one video; the booklets sit on the course.
 const targetCourses = ["hl-maths", "hl-chemistry"];
 const modulesPerCourse = [
   { title: "Module 1 — Foundations" },
@@ -41,8 +41,20 @@ async function seedCourse(courseId: string) {
   const course = await db.course.findUnique({ where: { id: courseId } });
   if (!course) { console.log(`Course ${courseId} not found, skipping.`); return; }
 
-  // Idempotent: clear any existing modules (cascades to content items) before reseeding.
+  // Idempotent: clear any existing modules (cascades to content items) and booklets before reseeding.
   await db.module.deleteMany({ where: { courseId } });
+  await db.booklet.deleteMany({ where: { courseId } });
+
+  for (let i = 0; i < modulesPerCourse.length; i++) {
+    const bookletKey = await upload(
+      `courses/${course.slug}/booklets/${slugify(modulesPerCourse[i].title)}.pdf`,
+      pdfBytes,
+      "application/pdf",
+    );
+    await db.booklet.create({
+      data: { courseId, order: i + 1, title: `${modulesPerCourse[i].title} — Booklet`, r2Key: bookletKey },
+    });
+  }
 
   for (let i = 0; i < modulesPerCourse.length; i++) {
     const order = i + 1;
@@ -53,17 +65,12 @@ async function seedCourse(courseId: string) {
     const modulePart = `module-${String(order).padStart(2, "0")}-${slugify(modulesPerCourse[i].title)}`;
     const prefix = `courses/${course.slug}/${modulePart}`;
 
-    const notesKey = await upload(`${prefix}/notes/sample.pdf`, pdfBytes, "application/pdf");
-    await db.contentItem.create({
-      data: { moduleId: mod.id, type: "NOTES", title: `${modulesPerCourse[i].title} — Notes`, r2Key: notesKey },
-    });
-
     const videoKey = await upload(`${prefix}/videos/sample.mp4`, mp4Bytes, "video/mp4");
     await db.contentItem.create({
-      data: { moduleId: mod.id, type: "VIDEO", title: `${modulesPerCourse[i].title} — Lesson`, r2Key: videoKey, durationSeconds: 10 },
+      data: { moduleId: mod.id, title: `${modulesPerCourse[i].title} — Lesson`, r2Key: videoKey, durationSeconds: 10 },
     });
   }
-  console.log(`Seeded content for ${courseId}: ${modulesPerCourse.length} modules with notes + video.`);
+  console.log(`Seeded content for ${courseId}: ${modulesPerCourse.length} booklets + ${modulesPerCourse.length} modules with a video each.`);
 }
 
 async function main() {

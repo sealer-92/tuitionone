@@ -25,7 +25,8 @@ export default async function DashboardPage() {
       course: {
         select: {
           id: true, slug: true, title: true, subject: true, year: true, weeks: true, schedule: true,
-          modules: { select: { id: true, contentItems: { select: { type: true } } } },
+          modules: { select: { id: true, _count: { select: { contentItems: true } } } },
+          booklets: { select: { id: true } },
         },
       },
     },
