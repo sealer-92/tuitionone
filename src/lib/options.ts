@@ -17,8 +17,8 @@ export interface OptionInfo {
 }
 
 const OPTION_META: Record<PurchaseOption, { label: string; description: string }> = {
-  FULL:             { label: 'Online course',                description: 'Online access to all video lessons.' },
-  FULL_PHYSICAL:    { label: 'Online course + printed booklet', description: 'All video lessons, plus a printed booklet posted to you.' },
+  FULL:             { label: 'Online course',                description: 'All video lessons, plus the digital course booklet.' },
+  FULL_PHYSICAL:    { label: 'Online course + printed booklet', description: 'All video lessons and the digital booklet, plus a printed copy posted to you.' },
   DIGITAL_BOOKLET:  { label: 'Digital booklet only',          description: 'Online access to the digital booklet — no videos.' },
   PHYSICAL_BOOKLET: { label: 'Printed booklet only',          description: 'A printed booklet posted to you — no online access.' },
 }

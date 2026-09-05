@@ -4,7 +4,7 @@ import { ContactBlock } from '@/components/ContactBlock'
 
 export const metadata = {
   title: 'FAQs — Tuition One',
-  description: 'Answers to common questions about course pricing, paying by card, accessing your videos, and signing in with an email link.',
+  description: 'Answers to common questions about course pricing, paying by card, accessing your videos and booklets, and signing in with an email link.',
 }
 
 const categories: { title: string; items: { q: string; a: string }[] }[] = [
@@ -13,11 +13,11 @@ const categories: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: 'How much do the courses cost?',
-        a: 'The online course is €150, or €200 if you\'d like a printed booklet posted to you as well. Pick a course on the Enrol page to see it broken down before you pay.',
+        a: 'The online course is €150 — every video lesson plus the digital course booklet. For €200 we also post you a printed copy of the booklet. Pick a course on the Enrol page to see it broken down before you pay.',
       },
       {
         q: "What's the difference between the two options?",
-        a: 'Both include full access to every video lesson. The €200 option also posts you a printed course booklet. We don\'t currently offer a digital booklet — that\'s coming in a future release.',
+        a: 'Both include full access to every video lesson and the digital course booklet, which you can read and download from your dashboard. The only difference is that the €200 option also posts you a printed copy of the booklet.',
       },
       {
         q: 'Which subjects are available right now?',
@@ -46,12 +46,16 @@ const categories: { title: string; items: { q: string; a: string }[] }[] = [
     title: 'Accessing your content',
     items: [
       {
-        q: 'How do I access my videos after purchasing?',
-        a: 'Sign in using the link emailed to you, then go to "My Modules" in your dashboard — every video you\'ve purchased is organised there by module.',
+        q: 'How do I access my course after purchasing?',
+        a: 'Sign in using the link emailed to you and go to "My Modules", then open your course. You\'ll find two sections you can expand: Booklets, which holds the digital booklets for the whole course, and Videos, where the lessons are organised by module.',
       },
       {
         q: 'Can I watch on any device?',
         a: "Yes — everything is 100% online, so you can watch on your phone, tablet or laptop, anytime, and pause, rewind or revisit lessons as often as you like.",
+      },
+      {
+        q: 'Can I download the digital booklet?',
+        a: 'Yes. Open your course and expand the Booklets section — each booklet has a View button to read it in your browser and a Download button to save a copy.',
       },
       {
         q: 'I paid for a printed booklet — when will it arrive?',
