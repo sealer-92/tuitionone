@@ -1,4 +1,5 @@
 import { Button } from './Button'
+import { CalculatorDisplay } from './CalculatorDisplay'
 import { ArrowRight } from 'lucide-react'
 
 const PAPER       = '#F5EFE4'
@@ -66,7 +67,7 @@ export function Hero() {
 
         {/* Illustration */}
         <div style={{ position: 'relative', width: '100%', maxWidth: 520, margin: '0 auto' }}>
-          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} role="img" aria-label="Illustration of a calculator, notebook, ruler, pencil, chemistry flask and a DNA double helix">
+          <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} role="img" aria-label="Illustration of a calculator spelling hello on its screen, alongside a notebook, ruler, pencil, chemistry flask and a DNA double helix">
             <g transform="rotate(-7 380 110)">
               <rect x="280" y="20" width="200" height="240" rx="6" fill={PAPER} />
               <rect x="280" y="20" width="200" height="22" fill={ORANGE} />
@@ -109,7 +110,7 @@ export function Hero() {
               <text x="208" y="142" textAnchor="middle" fontFamily="var(--font-ui)" fontWeight="800" fontSize="10" letterSpacing="2" fill={PAPER} opacity="0.85">TUITION ONE</text>
               <rect x="124" y="150" width="168" height="54" rx="8" fill={DARK} />
               <rect x="124" y="150" width="168" height="14" rx="8" fill="#000" opacity="0.25" />
-              <text x="282" y="190" textAnchor="end" fontFamily="ui-monospace, SF Mono, Menlo, monospace" fontWeight="600" fontSize="22" fill={LEAF} opacity="0.95">3.14</text>
+              <CalculatorDisplay fill={LEAF} />
               {Array.from({ length: 4 }).map((_, r) =>
                 Array.from({ length: 4 }).map((_, c) => {
                   const x = 124 + c * 42
