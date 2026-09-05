@@ -25,11 +25,6 @@ enum CourseFormat {
   BOOKLET_ONLY
 }
 
-enum ContentType {
-  VIDEO
-  NOTES
-}
-
 enum PurchaseStatus {
   PENDING
   COMPLETED
@@ -102,6 +97,7 @@ model Course {
   updatedAt   DateTime     @updatedAt
 
   modules   Module[]
+  booklets  Booklet[]
   purchases Purchase[]
 }
 
@@ -121,13 +117,27 @@ model Module {
 model ContentItem {
   id              String      @id @default(cuid())
   moduleId        String
-  type            ContentType
   title           String
   r2Key           String
   durationSeconds Int?
   createdAt       DateTime    @default(now())
 
   module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+// Booklets belong to the course, not to a module — a student browses them
+// separately from the module videos.
+model Booklet {
+  id        String   @id @default(cuid())
+  courseId  String
+  order     Int
+  title     String
+  r2Key     String
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
 }
 
 // ─── Purchases ────────────────────────────────────────────────────────────────

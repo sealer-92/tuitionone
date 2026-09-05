@@ -3,7 +3,7 @@ import {
   optionsForCourse,
   priceForOption,
   grantsVideo,
-  grantsNotes,
+  grantsBooklet,
   needsShipping,
   isValidEircode,
   normalizeEircode,
@@ -73,11 +73,11 @@ describe('access grants', () => {
     expect(grantsVideo('PHYSICAL_BOOKLET')).toBe(false)
   })
 
-  it('grants notes only for DIGITAL_BOOKLET (digital booklets are not offered yet)', () => {
-    expect(grantsNotes('FULL')).toBe(false)
-    expect(grantsNotes('FULL_PHYSICAL')).toBe(false)
-    expect(grantsNotes('DIGITAL_BOOKLET')).toBe(true)
-    expect(grantsNotes('PHYSICAL_BOOKLET')).toBe(false)
+  it('grants booklets to every online option, but not to the printed-only option', () => {
+    expect(grantsBooklet('FULL')).toBe(true)
+    expect(grantsBooklet('FULL_PHYSICAL')).toBe(true)
+    expect(grantsBooklet('DIGITAL_BOOKLET')).toBe(true)
+    expect(grantsBooklet('PHYSICAL_BOOKLET')).toBe(false)
   })
 
   it('requires shipping only for physical options', () => {

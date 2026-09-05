@@ -47,10 +47,10 @@ export function grantsVideo(option: PurchaseOption): boolean {
   return option === 'FULL' || option === 'FULL_PHYSICAL'
 }
 
-// Digital booklets aren't offered yet — only a standalone DIGITAL_BOOKLET
-// purchase grants online notes access for now.
-export function grantsNotes(option: PurchaseOption): boolean {
-  return option === 'DIGITAL_BOOKLET'
+// Every online purchase includes the digital booklet; the printed-only option
+// is postal, so it grants no online access.
+export function grantsBooklet(option: PurchaseOption): boolean {
+  return option !== 'PHYSICAL_BOOKLET'
 }
 
 export function needsShipping(option: PurchaseOption): boolean {

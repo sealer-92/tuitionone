@@ -18,8 +18,9 @@ function purchase(overrides: Partial<ModulePurchase['course']> & { id: string })
       weeks: 20,
       schedule: 'Saturday 13:00–14:00',
       modules: [
-        { id: 'm1', contentItems: [{ type: 'VIDEO' }, { type: 'VIDEO' }, { type: 'NOTES' }] },
+        { id: 'm1', _count: { contentItems: 2 } },
       ],
+      booklets: [{ id: 'b1' }],
       ...course,
     },
   }
@@ -33,8 +34,9 @@ const juniorScience = purchase({
   subject: 'Science',
   year: '3rd Year',
   modules: [
-    { id: 'm2', contentItems: [{ type: 'VIDEO' }, { type: 'NOTES' }, { type: 'NOTES' }] },
+    { id: 'm2', _count: { contentItems: 1 } },
   ],
+  booklets: [{ id: 'b2' }, { id: 'b3' }],
 })
 
 describe('ModulesGrid', () => {
@@ -47,9 +49,14 @@ describe('ModulesGrid', () => {
     expect(screen.getByText('2 videos')).toBeDefined()
   })
 
-  it('shows a booklets count when the purchase grants notes access', () => {
-    render(<ModulesGrid purchases={[{ ...seniorMaths, option: 'DIGITAL_BOOKLET' }]} />)
+  it('shows a booklets count for an online purchase', () => {
+    render(<ModulesGrid purchases={[seniorMaths]} />)
     expect(screen.getByText('1 booklets')).toBeDefined()
+  })
+
+  it('shows no booklets count for a printed-only purchase', () => {
+    render(<ModulesGrid purchases={[{ ...seniorMaths, option: 'PHYSICAL_BOOKLET' }]} />)
+    expect(screen.queryByText('1 booklets')).toBeNull()
   })
 
   it('links each card to its course page', () => {

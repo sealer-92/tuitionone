@@ -4,20 +4,20 @@ import { useState } from 'react'
 import { FileText, Download, ExternalLink } from 'lucide-react'
 
 interface Props {
-  itemId: string
+  bookletId: string
   title: string
 }
 
-export function NotesPdfViewer({ itemId, title }: Props) {
+export function BookletViewer({ bookletId, title }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function openNotes(mode: 'view' | 'download') {
+  async function openBooklet(mode: 'view' | 'download') {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(`/api/content/${itemId}/url`)
-      if (!res.ok) throw new Error('Could not load notes')
+      const res = await fetch(`/api/booklets/${bookletId}/url`)
+      if (!res.ok) throw new Error('Could not load booklet')
       const { url } = await res.json()
       if (mode === 'download') {
         const a = document.createElement('a')
@@ -28,7 +28,7 @@ export function NotesPdfViewer({ itemId, title }: Props) {
         window.open(url, '_blank', 'noopener,noreferrer')
       }
     } catch {
-      setError('Failed to load notes. Please try again.')
+      setError('Failed to load booklet. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -44,10 +44,10 @@ export function NotesPdfViewer({ itemId, title }: Props) {
         {error && <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--danger)', marginTop: 4 }}>{error}</div>}
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={() => openNotes('view')} disabled={loading} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>
+        <button onClick={() => openBooklet('view')} disabled={loading} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>
           <ExternalLink size={13} />View
         </button>
-        <button onClick={() => openNotes('download')} disabled={loading} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>
+        <button onClick={() => openBooklet('download')} disabled={loading} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>
           <Download size={13} />Download
         </button>
       </div>

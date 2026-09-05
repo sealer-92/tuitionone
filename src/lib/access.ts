@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, PurchaseOption } from '@prisma/client'
 import { db } from './db'
-import { grantsNotes, grantsVideo } from './options'
+import { grantsBooklet, grantsVideo } from './options'
 
 export async function canAccessItem(
   userId: string,
@@ -14,26 +14,50 @@ export async function canAccessItem(
 
   if (!item) return false
 
-  // A user may hold more than one completed purchase for a course; grant by the
-  // most permissive option they own.
+  return checkAccess(userId, item.module.courseId, grantsVideo, 'ContentItem', itemId, ipAddress)
+}
+
+export async function canAccessBooklet(
+  userId: string,
+  bookletId: string,
+  ipAddress: string,
+): Promise<boolean> {
+  const booklet = await db.booklet.findUnique({
+    where: { id: bookletId },
+    select: { courseId: true },
+  })
+
+  if (!booklet) return false
+
+  return checkAccess(userId, booklet.courseId, grantsBooklet, 'Booklet', bookletId, ipAddress)
+}
+
+// A user may hold more than one completed purchase for a course; grant by the
+// most permissive option they own.
+async function checkAccess(
+  userId: string,
+  courseId: string,
+  grants: (option: PurchaseOption) => boolean,
+  resourceType: string,
+  resourceId: string,
+  ipAddress: string,
+): Promise<boolean> {
   const purchases = await db.purchase.findMany({
-    where: { userId, courseId: item.module.courseId, status: 'COMPLETED' },
+    where: { userId, courseId, status: 'COMPLETED' },
     select: { option: true },
   })
 
-  const allowed =
-    item.type === 'VIDEO'
-      ? purchases.some((p) => grantsVideo(p.option))
-      : purchases.some((p) => grantsNotes(p.option))
+  const allowed = purchases.some((p) => grants(p.option))
 
-  if (!allowed) {
-    await writeAuditLog(userId, 'content_access_denied', 'ContentItem', itemId, ipAddress)
-    return false
-  }
+  await writeAuditLog(
+    userId,
+    allowed ? 'content_access' : 'content_access_denied',
+    resourceType,
+    resourceId,
+    ipAddress,
+  )
 
-  await writeAuditLog(userId, 'content_access', 'ContentItem', itemId, ipAddress)
-
-  return true
+  return allowed
 }
 
 export async function writeAuditLog(

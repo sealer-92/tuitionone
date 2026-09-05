@@ -4,8 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { VideoList } from '@/components/VideoList'
-import { NotesPdfViewer } from '@/components/NotesPdfViewer'
-import { grantsNotes, grantsVideo } from '@/lib/options'
+import { grantsVideo } from '@/lib/options'
 
 export default async function ModulePage({ params }: { params: Promise<{ courseId: string; moduleId: string }> }) {
   const session = await auth()
@@ -19,7 +18,6 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
   })
   if (purchases.length === 0) notFound()
 
-  const canNotes = purchases.some((p) => grantsNotes(p.option))
   const canVideo = purchases.some((p) => grantsVideo(p.option))
 
   const mod = await db.module.findUnique({
@@ -28,8 +26,7 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
   })
   if (!mod || mod.courseId !== courseId) notFound()
 
-  const notes  = canNotes ? mod.contentItems.filter((i) => i.type === 'NOTES') : []
-  const videos = canVideo ? mod.contentItems.filter((i) => i.type === 'VIDEO') : []
+  const videos = canVideo ? mod.contentItems : []
 
   return (
     <section style={{ maxWidth: 900, margin: '0 auto', padding: 'clamp(40px, 6vw, 80px) var(--container-pad)' }}>
@@ -44,15 +41,6 @@ export default async function ModulePage({ params }: { params: Promise<{ courseI
       <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(24px, 3.5vw, 34px)', color: 'var(--ink)', margin: '12px 0 36px' }}>
         {mod.title}
       </h1>
-
-      {notes.length > 0 && (
-        <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--ink)', margin: '0 0 16px' }}>Notes</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {notes.map((item) => <NotesPdfViewer key={item.id} itemId={item.id} title={item.title} />)}
-          </div>
-        </div>
-      )}
 
       {videos.length > 0 && (
         <div>

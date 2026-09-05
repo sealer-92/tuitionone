@@ -1,7 +1,7 @@
 import { Check, Mail, Package } from 'lucide-react'
 import Link from 'next/link'
 import { db } from '@/lib/db'
-import { grantsVideo, grantsNotes, needsShipping } from '@/lib/options'
+import { grantsVideo, grantsBooklet, needsShipping } from '@/lib/options'
 
 export const metadata = {
   title: 'Payment confirmed — Tuition One',
@@ -21,7 +21,7 @@ export default async function CheckoutSuccessPage({
 
   // "Booklet only" purchases (digital or printed) don't include video access.
   const bookletOnly  = !!purchase && !grantsVideo(purchase.option)
-  const hasDigital   = !!purchase && grantsNotes(purchase.option)
+  const hasDigital   = !!purchase && grantsBooklet(purchase.option)
   const hasShipping  = !!purchase && needsShipping(purchase.option)
 
   return (
