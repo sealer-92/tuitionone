@@ -71,8 +71,11 @@ async function checkStripeEndpoint(): Promise<void> {
     skip("STRIPE_SECRET_KEY not set — cannot verify the registered endpoint.");
     return;
   }
-  if (key.startsWith("sk_test_")) {
-    warn("STRIPE_SECRET_KEY is a test key; this checks your test-mode endpoints, not live.");
+  const isTestKey = key.startsWith("sk_test_");
+  if (isTestKey) {
+    warn("STRIPE_SECRET_KEY is a test key — this can only see test-mode endpoints.");
+    console.log(`        Your live-mode endpoints are NOT checked. Re-run with the live key`);
+    console.log(`        (STRIPE_SECRET_KEY=sk_live_... npm run prelaunch -- ${baseUrl}) before launch.`);
   }
 
   const stripe = new Stripe(key, { apiVersion: "2026-05-27.dahlia", typescript: true });
@@ -82,9 +85,12 @@ async function checkStripeEndpoint(): Promise<void> {
   const match = endpoints.find((e) => e.url.replace(/\/$/, "") === expected);
 
   if (!match) {
-    fail(`No Stripe endpoint registered for ${expected}`);
+    const mode = isTestKey ? "test" : "live";
+    const msg = `No ${mode}-mode Stripe endpoint registered for ${expected}`;
+    if (isTestKey) warn(`${msg} — expected if you only test against preview.`);
+    else fail(msg);
     if (endpoints.length) {
-      console.log(`        Registered instead: ${endpoints.map((e) => e.url).join(", ")}`);
+      console.log(`        Registered in ${mode} mode: ${endpoints.map((e) => e.url).join(", ")}`);
     }
     return;
   }
@@ -121,13 +127,49 @@ function checkUrls(): void {
   }
 
   // success_url, cancel_url and the welcome email link are all built from NEXTAUTH_URL.
+  // Run locally this reads .env.local, which is the dev value and says nothing about
+  // what Vercel serves in production — so only treat it as evidence when it isn't local.
   const nextAuthUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
+  const isLocal = !!nextAuthUrl && /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|$)/.test(nextAuthUrl);
+
   if (!nextAuthUrl) {
-    skip("NEXTAUTH_URL not set in this environment — verify it in Vercel's Production env vars.");
+    skip("NEXTAUTH_URL not set here — check it in Vercel → Settings → Environment Variables (Production).");
+  } else if (isLocal) {
+    skip(`NEXTAUTH_URL is ${nextAuthUrl} — your local dev value, as expected.`);
+    console.log(`        Production's value cannot be read from here; confirm it in Vercel →`);
+    console.log(`        Settings → Environment Variables (Production) is ${baseUrl}`);
   } else if (nextAuthUrl !== baseUrl) {
     fail(`NEXTAUTH_URL (${nextAuthUrl}) does not match ${baseUrl} — customers will be redirected off-domain after paying.`);
   } else {
     pass(`NEXTAUTH_URL matches.`);
+  }
+}
+
+// Best-effort probe of what the *deployed* app thinks its own URL is. NextAuth builds
+// these from the server's resolved auth URL, so an off-domain value here is real.
+async function checkDeployedAuthUrl(): Promise<void> {
+  console.log(`\nDeployed auth URLs`);
+
+  let urls: string[];
+  try {
+    const res = await fetch(`${baseUrl}/api/auth/providers`, { redirect: "manual" });
+    const providers = await res.json() as Record<string, { signinUrl?: string; callbackUrl?: string }>;
+    urls = Object.values(providers).flatMap((p) => [p.signinUrl, p.callbackUrl]).filter((u): u is string => !!u);
+  } catch {
+    skip("Could not read /api/auth/providers — skipping.");
+    return;
+  }
+
+  if (!urls.length) {
+    skip("No provider URLs returned — skipping.");
+    return;
+  }
+
+  const offDomain = urls.filter((u) => !u.startsWith(`${baseUrl}/`));
+  if (offDomain.length) {
+    fail(`The deployment builds auth URLs off-domain: ${offDomain.join(", ")}`);
+  } else {
+    pass(`Deployment builds auth URLs on ${baseUrl}.`);
   }
 }
 
@@ -141,6 +183,7 @@ async function main() {
 
   checkUrls();
   await checkProtection();
+  await checkDeployedAuthUrl();
   await checkStripeEndpoint();
 
   if (failed) {
