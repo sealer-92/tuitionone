@@ -52,9 +52,18 @@ export function Footer() {
 
       <div style={{ maxWidth: 1200, margin: '40px auto 0', paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', fontFamily: 'var(--font-ui)', fontSize: 12, color: 'rgba(245,239,228,0.5)' }}>
         <div>© 2026 Tuition One Grinds</div>
-        <div>
-          <Link href="/faq" style={{ color: 'rgba(245,239,228,0.5)', textDecoration: 'none' }}>FAQs</Link>
-          {' · '}Terms · Privacy · Refunds
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {[
+            { href: '/faq',      label: 'FAQs' },
+            { href: '/terms',    label: 'Terms' },
+            { href: '/privacy',  label: 'Privacy' },
+            { href: '/refunds',  label: 'Refunds' },
+          ].map((l, i) => (
+            <span key={l.href}>
+              {i > 0 && <span style={{ marginRight: 8 }}>·</span>}
+              <Link href={l.href} style={{ color: 'rgba(245,239,228,0.5)', textDecoration: 'none' }}>{l.label}</Link>
+            </span>
+          ))}
         </div>
       </div>
     </footer>

@@ -487,3 +487,76 @@ a:focus-visible {
 .cursor-pencil textarea {
   cursor: text !important;
 }
+
+/* ─── Legal pages (Terms, Privacy, Refunds) ─────────────────────────────────
+   Long-form prose, so the body elements are styled here rather than inline on
+   every paragraph and list item. */
+
+.legal-prose {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fg-2);
+}
+
+.legal-prose > section + section { margin-top: 44px; }
+
+.legal-prose h2 {
+  font-family: var(--font-display);
+  font-size: clamp(21px, 2.6vw, 27px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+
+.legal-prose h3 {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 26px 0 8px;
+}
+
+.legal-prose p { margin: 0 0 14px; }
+.legal-prose p:last-child { margin-bottom: 0; }
+
+.legal-prose ul { margin: 0 0 14px; padding-left: 22px; }
+.legal-prose li { margin-bottom: 8px; }
+.legal-prose li:last-child { margin-bottom: 0; }
+
+.legal-prose strong { color: var(--ink); font-weight: 600; }
+
+.legal-prose a { color: var(--orange-deep); text-decoration: underline; }
+.legal-prose a:hover { color: var(--orange); }
+
+/* Pulled-out summary or statutory-rights note. */
+.legal-callout {
+  background: var(--cream);
+  border-left: 3px solid var(--orange);
+  border-radius: 0 12px 12px 0;
+  padding: 16px 20px;
+  margin: 0 0 18px;
+}
+
+.legal-toc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 24px;
+}
+
+.legal-toc a {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--fg-2);
+}
+
+.legal-toc a:hover { color: var(--orange-deep); text-decoration: underline; }
+
+/* Anchored headings shouldn't sit flush against the sticky header. */
+.legal-prose section { scroll-margin-top: 96px; }

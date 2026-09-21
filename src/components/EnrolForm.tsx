@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Check, ArrowRight, Lock } from 'lucide-react'
+import Link from 'next/link'
+import { Check, ArrowRight, Lock, Info } from 'lucide-react'
 import { Course } from '@/lib/courses'
 import { optionsForCourse, needsShipping, isValidEircode, isValidEmail, isValidIrishMobile, IRISH_COUNTIES } from '@/lib/options'
 import { PurchaseOption } from '@prisma/client'
@@ -30,6 +31,7 @@ interface FormData {
   parentFirstName:  string
   parentLastName:   string
   parentEmail:      string
+  parentEmailConfirm: string
   parentPhone:      string
   studentFirstName: string
   studentLastName:  string
@@ -51,6 +53,7 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
     parentFirstName:  '',
     parentLastName:   '',
     parentEmail:      '',
+    parentEmailConfirm: '',
     parentPhone:      '',
     studentFirstName: '',
     studentLastName:  '',
@@ -64,6 +67,7 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
   })
   const [loading, setLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState('')
+  const [consent, setConsent] = useState(false)
 
   const upd = <K extends keyof FormData>(k: K, v: FormData[K]) => setData((d) => ({ ...d, [k]: v }))
 
@@ -73,11 +77,12 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
 
   const eircodeValid = isValidEircode(data.eircode)
   const emailValid   = isValidEmail(data.parentEmail)
+  const emailsMatch  = data.parentEmail.trim().toLowerCase() === data.parentEmailConfirm.trim().toLowerCase()
   const phoneValid   = isValidIrishMobile(data.parentPhone)
   const detailsValid =
     data.parentFirstName && data.parentLastName &&
     data.studentFirstName && data.studentLastName &&
-    emailValid && phoneValid &&
+    emailValid && emailsMatch && phoneValid &&
     data.line1 && data.city && data.county && eircodeValid
 
   async function handleCheckout() {
@@ -126,6 +131,10 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
   const errorStyle: React.CSSProperties = {
     fontFamily: 'var(--font-body)', fontSize: 12, color: '#B5483C', marginTop: 4, display: 'block',
   }
+  const policyLinkStyle: React.CSSProperties = { color: 'var(--orange-deep)' }
+  // The policy links sit inside the consent <label>, so without this a click on
+  // one would open the page and tick the box at the same time.
+  const stopLabelToggle = (e: React.MouseEvent) => e.stopPropagation()
 
   return (
     <div style={{ background: 'var(--paper)', borderRadius: 20, padding: 'clamp(20px, 4vw, 36px)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
@@ -161,16 +170,37 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
               <span style={labelStyle}>Student&apos;s last name</span>
               <input style={fieldStyle} value={data.studentLastName} onChange={(e) => upd('studentLastName', e.target.value)} />
             </label>
+            <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, alignItems: 'flex-start', background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 14px' }}>
+              <Info size={16} style={{ color: 'var(--orange-deep)', flexShrink: 0, marginTop: 2 }} />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, lineHeight: 1.55, color: 'var(--fg-2)' }}>
+                <strong style={{ color: 'var(--ink)' }}>Use the email address of the person who will be watching the videos and reading the notes.</strong>{' '}
+                There is no password — we email a sign-in link to this address, so it is the only way to get into the course.
+                Please double-check it before you pay.
+              </span>
+            </div>
             <label>
               <span style={labelStyle}>Email</span>
               <input
                 type="email"
+                autoComplete="email"
                 style={{ ...fieldStyle, borderColor: data.parentEmail && !emailValid ? '#B5483C' : 'var(--border-strong)' }}
                 value={data.parentEmail}
                 onChange={(e) => upd('parentEmail', e.target.value)}
                 placeholder="aoife@example.com"
               />
               {data.parentEmail && !emailValid && <span style={errorStyle}>Enter a valid email address.</span>}
+            </label>
+            <label>
+              <span style={labelStyle}>Confirm email</span>
+              <input
+                type="email"
+                autoComplete="off"
+                style={{ ...fieldStyle, borderColor: data.parentEmailConfirm && !emailsMatch ? '#B5483C' : 'var(--border-strong)' }}
+                value={data.parentEmailConfirm}
+                onChange={(e) => upd('parentEmailConfirm', e.target.value)}
+                placeholder="Re-type the same address"
+              />
+              {data.parentEmailConfirm && !emailsMatch && <span style={errorStyle}>The two email addresses don&apos;t match.</span>}
             </label>
             <label>
               <span style={labelStyle}>Phone</span>
@@ -301,6 +331,8 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px 24px', marginTop: 14, fontFamily: 'var(--font-body)', fontSize: 15 }}>
               <div style={{ color: 'var(--fg-3)' }}>Student</div>
               <div style={{ color: 'var(--ink)', fontWeight: 600 }}>{`${data.studentFirstName} ${data.studentLastName}`.trim() || '—'}</div>
+              <div style={{ color: 'var(--fg-3)' }}>Sign-in email</div>
+              <div style={{ color: 'var(--ink)', fontWeight: 600, wordBreak: 'break-all' }}>{data.parentEmail || '—'}</div>
               <div style={{ color: 'var(--fg-3)' }}>Course</div>
               <div style={{ color: 'var(--ink)', fontWeight: 600 }}>{selectedCourse ? `${selectedCourse.title} · ${selectedCourse.year}` : '—'}</div>
               <div style={{ color: 'var(--fg-3)' }}>Option</div>
@@ -315,6 +347,21 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
               <div style={{ fontFamily: 'var(--font-ui)', color: 'var(--orange-deep)', fontWeight: 800, fontSize: 18 }}>{selectedOption ? `€${selectedOption.priceCents / 100}` : '—'}</div>
             </div>
           </div>
+          <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              style={{ width: 17, height: 17, marginTop: 2, accentColor: 'var(--orange)', flexShrink: 0 }}
+            />
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, lineHeight: 1.55, color: 'var(--fg-2)' }}>
+              I agree to the <Link href="/terms" target="_blank" onClick={stopLabelToggle} style={policyLinkStyle}>Terms of Service</Link>,{' '}
+              the <Link href="/privacy" target="_blank" onClick={stopLabelToggle} style={policyLinkStyle}>Privacy Policy</Link> and
+              the <Link href="/refunds" target="_blank" onClick={stopLabelToggle} style={policyLinkStyle}>Refund &amp; Cancellation Policy</Link>.
+              I ask for my course to be made available immediately and understand that this ends my 14-day right to cancel
+              the online content. Printed booklets keep their 14-day return right.
+            </span>
+          </label>
           {checkoutError && (
             <div style={{ background: 'rgba(181,72,60,0.08)', border: '1px solid rgba(181,72,60,0.25)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: 14, color: '#B5483C' }}>
               {checkoutError}
@@ -322,7 +369,7 @@ export function EnrolForm({ courses }: { courses: Course[] }) {
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
             <Button variant="ghost" onClick={() => setStep(2)} disabled={loading}>← Back</Button>
-            <Button variant="primary" size="lg" onClick={handleCheckout} icon={<Lock size={16} />} disabled={loading}>
+            <Button variant="primary" size="lg" onClick={handleCheckout} icon={<Lock size={16} />} disabled={loading || !consent}>
               {loading ? 'Redirecting…' : `Pay €${selectedOption ? selectedOption.priceCents / 100 : ''}`}
             </Button>
           </div>

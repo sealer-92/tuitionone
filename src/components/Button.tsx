@@ -86,7 +86,7 @@ export function Button({
   }
 
   return (
-    <button type={type || 'button'} onClick={onClick} style={s} {...handlers}>
+    <button type={type || 'button'} onClick={onClick} disabled={disabled} style={s} {...handlers}>
       {icon && icon}
       {children}
     </button>
