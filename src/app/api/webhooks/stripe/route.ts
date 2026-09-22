@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { writeAuditLog } from '@/lib/access'
 import { PurchaseOption } from '@prisma/client'
 import Stripe from 'stripe'
+import { LEGAL } from '@/lib/legal'
 
 const VALID_OPTIONS: PurchaseOption[] = ['FULL', 'FULL_PHYSICAL', 'DIGITAL_BOOKLET', 'PHYSICAL_BOOKLET']
 
@@ -28,7 +29,7 @@ async function sendMagicLinkEmail(email: string, name: string) {
           Access my courses
         </a>
         <p style="color:rgba(27,42,36,0.52);font-size:13px;margin-top:24px;">
-          Questions? Reply to this email or WhatsApp us on 087 069 2287.
+          Questions? Email us at <a href="mailto:${LEGAL.email}" style="color:#C97529;">${LEGAL.email}</a>.
         </p>
       </div>
     `,

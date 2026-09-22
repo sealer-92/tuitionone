@@ -1,12 +1,11 @@
 'use client'
 
-import { Mail, AtSign, MessageCircle } from 'lucide-react'
+import { Mail, AtSign } from 'lucide-react'
 import { useState } from 'react'
 
 const items = [
   { icon: <Mail size={20} />,        label: 'Email',     value: 'tuitiononegrinds@gmail.com', href: 'mailto:tuitiononegrinds@gmail.com' },
   { icon: <AtSign size={20} />,      label: 'Instagram', value: '@tuition_one',                href: 'https://instagram.com/tuition_one' },
-  { icon: <MessageCircle size={20}/>, label: 'WhatsApp', value: '087 069 2287',                href: 'https://wa.me/353870692287' },
 ]
 
 function ContactTile({ item, dark }: { item: typeof items[0]; dark?: boolean }) {

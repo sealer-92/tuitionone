@@ -174,8 +174,7 @@ const sections: LegalSection[] = [
         </ul>
         <p>
           You are welcome to use the standard cancellation form set out in the 2013 Regulations, but a plain email is
-          enough. You can also message us on WhatsApp at <a href={LEGAL.whatsapp}>{LEGAL.phone}</a>, though we will ask
-          you to confirm by email so there is a record.
+          enough.
         </p>
         <p>
           We reply within {LEGAL.responseDays} working days. Approved refunds go back to the card or payment method you

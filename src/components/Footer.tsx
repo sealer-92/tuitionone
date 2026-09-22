@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Mail, AtSign, MessageCircle } from 'lucide-react'
+import { Mail, AtSign } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -45,7 +45,6 @@ export function Footer() {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10, fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(245,239,228,0.75)' }}>
             <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Mail size={14} />tuitiononegrinds@gmail.com</li>
             <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><AtSign size={14} />@tuition_one</li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><MessageCircle size={14} />087 069 2287</li>
           </ul>
         </div>
       </div>

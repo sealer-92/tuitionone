@@ -66,7 +66,6 @@ export function LegalContact() {
       <p>
         <strong>{LEGAL.tradingName}</strong><br />
         Email: <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a><br />
-        Phone / WhatsApp: <a href={LEGAL.whatsapp}>{LEGAL.phone}</a><br />
         Instagram: <a href={LEGAL.instagramUrl}>{LEGAL.instagram}</a>
         {LEGAL.postalAddress && <><br />Post: {LEGAL.postalAddress}</>}
       </p>
