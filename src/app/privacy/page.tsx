@@ -121,12 +121,20 @@ const sections: LegalSection[] = [
     id: 'transfers',
     heading: 'Where your data is held',
     body: (
-      <p>
-        We prefer to keep data in the European Economic Area, but some of our providers are based in the United States
-        and may process data there. Where that happens, the transfer is covered by an adequacy decision of the European
-        Commission, by the EU Standard Contractual Clauses, or by the EU–US Data Privacy Framework, together with
-        appropriate technical safeguards.
-      </p>
+      <>
+        <p>
+          <strong>Your data is stored and processed in the European Economic Area.</strong> Several of our providers are
+          global companies, so where a service offered a choice of region we selected an EU one — the database, the file
+          storage holding the course material, the rate limiting and the email delivery are all configured to keep data
+          within the EEA.
+        </p>
+        <p>
+          Stripe is a separate controller for payment data and operates internationally under its own safeguards; see
+          its <a href="https://stripe.com/ie/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a> for
+          details. Should we ever need to move any other processing outside the EEA, we would update this policy first
+          and rely on an adequacy decision of the European Commission or the EU Standard Contractual Clauses.
+        </p>
+      </>
     ),
   },
   {

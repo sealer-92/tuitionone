@@ -94,13 +94,15 @@ const sections: LegalSection[] = [
     heading: 'What you are buying',
     body: (
       <>
-        <p>Each course is sold as a one-off purchase. Depending on the option you choose, it includes:</p>
+        <p>Each course is sold as a one-off purchase, in one of two options:</p>
         <ul>
           <li><strong>Online course</strong> — every video lesson in the course, plus the digital course booklet, both available in your dashboard.</li>
           <li><strong>Online course + printed booklet</strong> — as above, plus a printed copy of the booklet posted to your delivery address.</li>
-          <li><strong>Digital booklet only</strong> — online access to the digital booklet, with no video lessons.</li>
-          <li><strong>Printed booklet only</strong> — a printed booklet posted to you, with no online access.</li>
         </ul>
+        <p>
+          Every purchase includes the digital booklet; the printed copy is the only difference between the two. We do
+          not sell the booklet on its own.
+        </p>
         <p>
           Exactly what is included is shown on the course page and again on the confirmation step before you pay. The
           price you see at checkout is the total price in euro, including any tax that applies. There is no recurring
