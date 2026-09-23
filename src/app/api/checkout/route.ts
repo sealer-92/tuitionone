@@ -83,9 +83,11 @@ export async function POST(req: NextRequest) {
 
   const optionLabel = optionsForCourse(course).find((o) => o.option === option)?.label ?? course.title
 
+  // No payment_method_types: the account uses Stripe's Managed Payments, which
+  // rejects the parameter and picks the methods itself. Which methods appear is
+  // controlled in the Stripe Dashboard, not here.
   const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
-    payment_method_types: ['card'],
     // Locks the email on the Stripe page so the webhook attaches the purchase
     // to the same account we checked for prior ownership.
     customer_email: parentEmail,
