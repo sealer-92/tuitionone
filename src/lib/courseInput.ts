@@ -22,12 +22,17 @@ export interface CourseInputBody {
   physicalBookletPriceEuros?: number | ''
 }
 
+// Every status the admin form offers. Anything else falls back to DRAFT, which
+// hides the course rather than publishing something unintended.
+const COURSE_STATUSES: CourseStatus[] = ['DRAFT', 'ACTIVE', 'COMING_SOON', 'ARCHIVED']
+
 // Builds the persisted course fields (status, format, cents prices) from a raw request body.
 // Full-access prices are dropped for booklet-only courses.
 export function buildCourseData(body: CourseInputBody) {
   const format: CourseFormat = body.format === 'BOOKLET_ONLY' ? 'BOOKLET_ONLY' : 'VIDEO_AND_BOOKLET'
-  const status: CourseStatus =
-    body.status === 'ACTIVE' ? 'ACTIVE' : body.status === 'ARCHIVED' ? 'ARCHIVED' : 'DRAFT'
+  const status: CourseStatus = COURSE_STATUSES.includes(body.status as CourseStatus)
+    ? (body.status as CourseStatus)
+    : 'DRAFT'
   const isVideo = format === 'VIDEO_AND_BOOKLET'
 
   return {
