@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
 import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 import { checkoutRateLimit } from '@/lib/ratelimit'
@@ -83,10 +84,12 @@ export async function POST(req: NextRequest) {
 
   const optionLabel = optionsForCourse(course).find((o) => o.option === option)?.label ?? course.title
 
-  // No payment_method_types: the account uses Stripe's Managed Payments, which
-  // rejects the parameter and picks the methods itself. Which methods appear is
-  // controlled in the Stripe Dashboard, not here.
-  const session = await getStripe().checkout.sessions.create({
+  // Managed Payments is on by default for this account, but it requires a tax
+  // code on every line item and we don't classify products for tax, so it's
+  // switched off per session. The pinned SDK's types don't carry the parameter
+  // yet, hence the assertion below. Without it, Checkout offers whatever
+  // payment methods are enabled in the Stripe Dashboard.
+  const params: Stripe.Checkout.SessionCreateParams = {
     mode: 'payment',
     // Locks the email on the Stripe page so the webhook attaches the purchase
     // to the same account we checked for prior ownership.
@@ -121,7 +124,12 @@ export async function POST(req: NextRequest) {
     success_url: `${process.env.NEXTAUTH_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url:  `${process.env.NEXTAUTH_URL}/courses`,
     customer_creation: 'always',
-  })
+  }
+
+  const session = await getStripe().checkout.sessions.create({
+    ...params,
+    managed_payments: { enabled: false },
+  } as Stripe.Checkout.SessionCreateParams)
 
   return NextResponse.json({ url: session.url })
 }
