@@ -5,17 +5,19 @@ import type Stripe from 'stripe'
 // The signature check and email delivery are Stripe/Resend concerns — stub
 // them so the test drives our fulfilment logic against the real local DB.
 const constructEvent = vi.fn()
+const send = vi.fn<(msg: { to: string; html: string }) => Promise<{ error: null }>>(async () => ({ error: null }))
 vi.mock('@/lib/stripe', () => ({
   getStripe: () => ({ webhooks: { constructEvent } }),
 }))
 vi.mock('resend', () => ({
   Resend: class {
-    emails = { send: vi.fn(async () => ({ error: null })) }
+    emails = { send }
   },
 }))
 
 import { POST } from '@/app/api/webhooks/stripe/route'
 import { db } from '@/lib/db'
+import { createHash } from 'node:crypto'
 
 const run = Math.random().toString(36).slice(2, 8)
 const EMAIL = `webhook.${run}@tests.example.com`
@@ -62,6 +64,7 @@ async function deliver(event: Stripe.Event) {
 }
 
 afterAll(async () => {
+  await db.verificationToken.deleteMany({ where: { identifier: EMAIL } })
   const user = await db.user.findUnique({ where: { email: EMAIL } })
   if (user) {
     await db.auditLog.deleteMany({ where: { userId: user.id } })
@@ -80,6 +83,23 @@ describe('POST /api/webhooks/stripe — fulfilment', () => {
     expect(user).not.toBeNull()
     expect(user!.purchases).toHaveLength(1)
     expect(user!.purchases[0]).toMatchObject({ courseId: 'hl-maths', status: 'COMPLETED' })
+  })
+
+  it('emails a one-click sign-in link backed by a valid Auth.js token', async () => {
+    const { html } = send.mock.calls.at(-1)![0]
+    const href = html.match(/href="([^"]*\/api\/auth\/callback\/resend[^"]*)"/)?.[1]
+    expect(href).toBeDefined()
+
+    const url = new URL(href!)
+    expect(url.searchParams.get('email')).toBe(EMAIL)
+    expect(url.searchParams.get('callbackUrl')).toBe('/dashboard')
+
+    // Auth.js looks the token up as sha256(token + secret) — it must exist and be unexpired.
+    const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET
+    const hashed = createHash('sha256').update(`${url.searchParams.get('token')}${secret}`).digest('hex')
+    const row = await db.verificationToken.findUnique({ where: { token: hashed } })
+    expect(row).toMatchObject({ identifier: EMAIL })
+    expect(row!.expires.getTime()).toBeGreaterThan(Date.now())
   })
 
   it('lets the same account complete a purchase of a second, different course', async () => {

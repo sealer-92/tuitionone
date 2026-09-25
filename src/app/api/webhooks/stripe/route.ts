@@ -4,14 +4,32 @@ import { db } from '@/lib/db'
 import { writeAuditLog } from '@/lib/access'
 import { PurchaseOption } from '@prisma/client'
 import Stripe from 'stripe'
+import { createHash, randomBytes } from 'node:crypto'
 import { LEGAL } from '@/lib/legal'
 
 const VALID_OPTIONS: PurchaseOption[] = ['FULL', 'FULL_PHYSICAL', 'DIGITAL_BOOKLET', 'PHYSICAL_BOOKLET']
 
 export const dynamic = 'force-dynamic'
 
+// Mints the same one-time token Auth.js's email provider would (stored as
+// sha256(token + secret)), so the purchase email signs the customer straight in.
+async function createSignInUrl(email: string) {
+  const token  = randomBytes(32).toString('hex')
+  const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET
+  await db.verificationToken.create({
+    data: {
+      identifier: email,
+      token:      createHash('sha256').update(`${token}${secret}`).digest('hex'),
+      expires:    new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  })
+  const params = new URLSearchParams({ callbackUrl: '/dashboard', token, email })
+  return `${process.env.NEXTAUTH_URL}/api/auth/callback/resend?${params}`
+}
+
 // Stripe requires the raw body — we use req.text() to get it before parsing
 async function sendMagicLinkEmail(email: string, name: string) {
+  const signInUrl = await createSignInUrl(email)
   const { Resend } = await import('resend')
   const resend = new Resend(process.env.RESEND_API_KEY!)
   const { error } = await resend.emails.send({
@@ -23,8 +41,9 @@ async function sendMagicLinkEmail(email: string, name: string) {
         <h2 style="color: #1B2A24;">Welcome to Tuition One, ${name || 'there'}!</h2>
         <p style="color: rgba(27,42,36,0.72);">
           Your course purchase is confirmed. Click below to sign in and access your course materials.
+          This link expires in 24 hours and can only be used once.
         </p>
-        <a href="${process.env.NEXTAUTH_URL}/auth/signin"
+        <a href="${signInUrl}"
            style="display:inline-block;background:#E58F3F;color:white;font-weight:600;padding:14px 28px;border-radius:12px;text-decoration:none;margin-top:8px;">
           Access my courses
         </a>
