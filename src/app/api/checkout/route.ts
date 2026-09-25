@@ -87,10 +87,15 @@ export async function POST(req: NextRequest) {
   // Managed Payments is on by default for this account, but it requires a tax
   // code on every line item and we don't classify products for tax, so it's
   // switched off per session. The pinned SDK's types don't carry the parameter
-  // yet, hence the assertion below. Without it, Checkout offers whatever
-  // payment methods are enabled in the Stripe Dashboard.
+  // yet, hence the assertion below.
+  //
+  // With it off we can name the payment methods again. Customers are in
+  // Ireland, so the Dashboard's Belgian, Portuguese, Italian and Austrian
+  // methods are only noise between a parent and the Pay button. Apple Pay and
+  // Google Pay ride along with `card` and need no entry of their own.
   const params: Stripe.Checkout.SessionCreateParams = {
     mode: 'payment',
+    payment_method_types: ['card', 'link', 'revolut_pay'],
     // Locks the email on the Stripe page so the webhook attaches the purchase
     // to the same account we checked for prior ownership.
     customer_email: parentEmail,
