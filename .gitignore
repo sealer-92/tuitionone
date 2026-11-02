@@ -48,3 +48,4 @@ next-env.d.ts
 
 # brag video intermediates
 /brag-output/work/
+/brag-output-*/work/
